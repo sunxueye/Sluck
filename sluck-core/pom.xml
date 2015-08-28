@@ -10,5 +10,15 @@
   <artifactId>sluck-core</artifactId>
 
   <dependencies>
+    <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+       <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+       <groupId>joda-time</groupId>
+       <artifactId>joda-time</artifactId>
+       <version>${joda-time.version}</version>
+    </dependency>
   </dependencies>
 </project>
