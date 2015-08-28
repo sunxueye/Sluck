@@ -1,6 +1,5 @@
 package com.sluckframework.domain.aggregate;
 
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.sluckframework.domain.event.aggregate.AggregateEvent;
 import com.sluckframework.domain.event.aggregate.AggregateEventContainer;
@@ -26,7 +25,7 @@ public abstract class AbstractAggregateRoot<ID extends Identifier<?>> implements
 
     private Long lastEventSequenceNumber;
 
-    private AtomicLong version = new AtomicLong(0);
+    private Long version;
 
     /**
      * 注册聚合事件, 会执行 EventRegistrationCallback
@@ -97,7 +96,7 @@ public abstract class AbstractAggregateRoot<ID extends Identifier<?>> implements
 
     @Override
     public Long getVersion() {
-        return version.get();
+        return version;
     }
     
     private AggregateEventContainer getEventContainer() {
