@@ -1,6 +1,7 @@
 package org.sluckframework.cqrs.upcasting;
 
 import org.joda.time.DateTime;
+import org.sluckframework.domain.identifier.Identifier;
 
 
 /** 
@@ -17,14 +18,14 @@ public interface UpcastingContext {
      *
      * @return the identifier of the message wrapping the object to upcast
      */
-    String getEventIdentifier();
+	Object getEventIdentifier();
 
     /**
      * 返回事件对应的聚合的标示符，如果不是一个聚合事件，那么返回 null
      * 
      * @return the Identifier of the Aggregate to which the Event was applied, or null if not applicable
      */
-    Object getAggregateIdentifier();
+    Identifier<?> getAggregateIdentifier();
 
     /**
      * 返回事件的 sequence number
