@@ -13,15 +13,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.common.exception.Assert;
 import org.sluckframework.common.jdbc.ConnectionProvider;
+import org.sluckframework.common.jdbc.DataSourceConnectionProvider;
 import org.sluckframework.common.jdbc.PersistenceExceptionResolver;
+import org.sluckframework.common.jdbc.UnitOfWorkAwareConnectionProviderWrapper;
 import org.sluckframework.common.serializer.EventSerializer;
+import org.sluckframework.common.serializer.SerializedAggregateEventData;
+import org.sluckframework.common.serializer.SerializedObject;
 import org.sluckframework.common.serializer.Serializer;
 import org.sluckframework.common.serializer.json.JacksonSerializer;
+import org.sluckframework.common.util.IOUtils;
 import org.sluckframework.cqrs.upcasting.SimpleUpcasterChain;
 import org.sluckframework.cqrs.upcasting.UpcasterAware;
 import org.sluckframework.cqrs.upcasting.UpcasterChain;
+import org.sluckframework.domain.event.aggregate.AggregateEvent;
+import org.sluckframework.domain.event.aggregate.AggregateEventStream;
+import org.sluckframework.domain.event.aggregate.GenericAggregateEvent;
+import org.sluckframework.domain.event.eventstore.EventStreamNotFoundException;
 import org.sluckframework.domain.event.eventstore.SnapshotEventStore;
 import org.sluckframework.domain.event.eventstore.query.EventStoreQueryManagement;
+import org.sluckframework.domain.identifier.Identifier;
+import org.sluckframework.domain.repository.ConcurrencyException;
+
+import static org.sluckframework.domain.identifier.IdentifierValidator.validateIdentifier;
 
 
 /**
@@ -31,6 +44,7 @@ import org.sluckframework.domain.event.eventstore.query.EventStoreQueryManagemen
  * @time 2015年8月29日 下午5:40:11
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManagement, UpcasterAware{
 	
 	private static final Logger logger = LoggerFactory.getLogger(JdbcEventStore.class);
@@ -71,48 +85,37 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
     }
 
     /**
-     * Initialize a JdbcEventStore using the default <code>EntryStore</code> and an {@link
-     * org.axonframework.serializer.xml.XStreamSerializer}, which serializes events as XML.
-     * The given <code>connectionProvider</code> is used to obtain connections to the underlying data source
+     * 使用指定的 cp 和默认的 JacksonSerializer 初始化
      *
      * @param connectionProvider The connection provider to obtain connections from
      */
-    @SuppressWarnings("rawtypes")
 	public JdbcEventStore(ConnectionProvider connectionProvider) {
         this(new DefaultEventEntryStore(connectionProvider), new JacksonSerializer());
     }
 
     /**
-     * Initialize a JdbcEventStore using the given <code>eventEntryStore</code> and an {@link
-     * org.axonframework.serializer.xml.XStreamSerializer}, which serializes events as XML.
-     * <p/>
-     * Obtains connection from the given <code>dataSource</code>, unless a connection was already obtained in the same
-     * Unit of Work, in which case that connection is re-used instead.
+     * 使用 数据源 初始化
      *
-     * @param dataSource The DataSource to obtain connections from, when necessary.
+     * @param dataSource The DataSource to obtain connections from
      */
-    public JdbcEventStore(DataSource dataSource) {
+	public JdbcEventStore(DataSource dataSource) {
         this(new DefaultEventEntryStore(
                      new UnitOfWorkAwareConnectionProviderWrapper(new DataSourceConnectionProvider(dataSource))),
-             new FastJsonSerializer()
+             new JacksonSerializer()
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked"})
     @Override
-    public void appendEvents(String type, DomainEventStream events) {
-        DomainEventMessage event = null;
+    public void appendEvents(String type, AggregateEventStream events) {
+        AggregateEvent event = null;
         try {
             while (events.hasNext()) {
                 event = events.next();
                 validateIdentifier(event.getAggregateIdentifier().getClass());
                 final Class dataType = eventEntryStore.getDataType();
                 SerializedObject serializedPayload = serializer.serializePayload(event, dataType);
-                SerializedObject serializedMetaData = serializer.serializeMetaData(event, dataType);
-                eventEntryStore.persistEvent(type, event, serializedPayload, serializedMetaData);
+                eventEntryStore.persistEvent(type, event, serializedPayload);
             }
         } catch (RuntimeException exception) {
             if (persistenceExceptionResolver != null
@@ -134,17 +137,16 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
      */
     @SuppressWarnings({"unchecked"})
     @Override
-    public DomainEventStream readEvents(String type, DomainIdentifier identifier) {
+    public AggregateEventStream readEvents(String type, Identifier<?> identifier) {
         long snapshotSequenceNumber = -1;
-        SerializedDomainEventData lastSnapshotEvent = eventEntryStore.loadLastSnapshotEvent(type, identifier);
-        DomainEventMessage snapshotEvent = null;
+        SerializedAggregateEventData lastSnapshotEvent = eventEntryStore.loadLastSnapshotEvent(type, identifier);
+        AggregateEvent snapshotEvent = null;
         if (lastSnapshotEvent != null) {
             try {
-                snapshotEvent = new GenericDomainEventMessage<Object>(
+                snapshotEvent = new GenericAggregateEvent(
                         identifier,
                         lastSnapshotEvent.getSequenceNumber(),
-                        serializer.deserialize(lastSnapshotEvent.getPayload()),
-                        (Map<String, Object>) serializer.deserialize(lastSnapshotEvent.getMetaData()));
+                        serializer.deserialize(lastSnapshotEvent.getPayload()));
                 snapshotSequenceNumber = snapshotEvent.getSequenceNumber();
             } catch (RuntimeException ex) {
                 logger.warn("Error while reading snapshot event entry. "
@@ -161,22 +163,22 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
             }
         }
 
-        Iterator<? extends SerializedDomainEventData> entries =
+        Iterator<? extends SerializedAggregateEventData> entries =
                 eventEntryStore.fetchAggregateStream(type, identifier, snapshotSequenceNumber + 1, batchSize);
         if (snapshotEvent == null && !entries.hasNext()) {
             IOUtils.closeQuietlyIfCloseable(entries);
             throw new EventStreamNotFoundException(type, identifier);
         }
-        return new IteratorDomainEventStream(snapshotEvent, entries, identifier, false);
+        return new IteratorAggregateEventStream(snapshotEvent, entries, identifier, false);
     }
 
     @Override
-    public DomainEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber) {
+    public AggregateEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber) {
         return readEvents(type, identifier, firstSequenceNumber, Long.MAX_VALUE);
     }
 
     @Override
-    public DomainEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber,
+    public AggregateEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber,
                                         long lastSequenceNumber) {
         int minimalBatchSize = (int) Math.min(batchSize, (lastSequenceNumber - firstSequenceNumber) + 2);
         Iterator<? extends SerializedDomainEventData> entries = eventEntryStore.fetchAggregateStream(type,
@@ -186,7 +188,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         if (!entries.hasNext()) {
             throw new EventStreamNotFoundException(type, identifier);
         }
-        return new IteratorDomainEventStream(null, entries, identifier, lastSequenceNumber, false);
+        return new IteratorAggregateEventStream(null, entries, identifier, lastSequenceNumber, false);
     }
 
     /**
@@ -197,7 +199,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void appendSnapshotEvent(String type, DomainEventMessage snapshotEvent) {
+    public void appendSnapshotEvent(String type, AggregateEvent snapshotEvent) {
         // Persist snapshot before pruning redundant archived ones, in order to prevent snapshot misses when reloading
         // an aggregate, which may occur when a READ_UNCOMMITTED transaction isolation level is used.
         final Class<?> dataType = eventEntryStore.getDataType();
@@ -246,7 +248,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
                                                                                             parameters,
                                                                                             batchSize
         );
-        DomainEventStream eventStream = new IteratorDomainEventStream(null, batch, null, true);
+        AggregateEventStream eventStream = new IteratorAggregateEventStream(null, batch, null, true);
         try {
             while (eventStream.hasNext()) {
                 visitor.doWithEvent(eventStream.next());
@@ -298,24 +300,24 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         this.maxSnapshotsArchived = maxSnapshotsArchived;
     }
 
-    private final class IteratorDomainEventStream implements DomainEventStream, Closeable {
+    private final class IteratorAggregateEventStream implements AggregateEventStream, Closeable {
 
-        private Iterator<DomainEventMessage> currentBatch;
-        private DomainEventMessage next;
-        private final Iterator<? extends SerializedDomainEventData> iterator;
-        private final DomainIdentifier aggregateIdentifier;
+        private Iterator<AggregateEvent> currentBatch;
+        private AggregateEvent next;
+        private final Iterator<? extends SerializedAggregateEventData> iterator;
+        private final Identifier<?> aggregateIdentifier;
         private final long lastSequenceNumber;
         private final boolean skipUnknownTypes;
 
-        public IteratorDomainEventStream(DomainEventMessage snapshotEvent,
-                                         Iterator<? extends SerializedDomainEventData> iterator,
-                                         DomainIdentifier aggregateIdentifier, boolean skipUnknownTypes) {
+        public IteratorAggregateEventStream(AggregateEvent snapshotEvent,
+                                         Iterator<? extends SerializedAggregateEventData> iterator,
+                                         Identifier<?> aggregateIdentifier, boolean skipUnknownTypes) {
             this(snapshotEvent, iterator, aggregateIdentifier, Long.MAX_VALUE, skipUnknownTypes);
         }
 
-        public IteratorDomainEventStream(DomainEventMessage snapshotEvent,
-                                         Iterator<? extends SerializedDomainEventData> iterator,
-                                         DomainIdentifier aggregateIdentifier, long lastSequenceNumber,
+        public IteratorAggregateEventStream(AggregateEvent snapshotEvent,
+                                         Iterator<? extends SerializedAggregateEventData> iterator,
+                                         Identifier<?> aggregateIdentifier, long lastSequenceNumber,
                                          boolean skipUnknownTypes) {
             this.aggregateIdentifier = aggregateIdentifier;
             this.lastSequenceNumber = lastSequenceNumber;
@@ -323,7 +325,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
             if (snapshotEvent != null) {
                 currentBatch = Collections.singletonList(snapshotEvent).iterator();
             } else {
-                currentBatch = Collections.<DomainEventMessage>emptyList().iterator();
+                currentBatch = Collections.<AggregateEvent>emptyList().iterator();
             }
             this.iterator = iterator;
             initializeNextItem();
@@ -336,15 +338,15 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         }
 
         @Override
-        public DomainEventMessage next() {
-            DomainEventMessage current = next;
+        public AggregateEvent next() {
+            AggregateEvent current = next;
             initializeNextItem();
             return current;
         }
 
         private void initializeNextItem() {
             while (!currentBatch.hasNext() && iterator.hasNext()) {
-                final SerializedDomainEventData entry = iterator.next();
+                final SerializedAggregateEventData entry = iterator.next();
                 currentBatch = upcastAndDeserialize(entry, aggregateIdentifier, serializer, upcasterChain,
                                                     skipUnknownTypes)
                         .iterator();
@@ -353,7 +355,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         }
 
         @Override
-        public DomainEventMessage peek() {
+        public AggregateEvent peek() {
             return next;
         }
 
