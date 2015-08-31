@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sluckframework.common.serializer.SerializedAggregateEvent;
 import org.sluckframework.common.serializer.SerializedAggregateEventData;
 import org.sluckframework.common.serializer.SerializedObject;
 import org.sluckframework.common.serializer.Serializer;
 import org.sluckframework.common.serializer.UnknownSerializedTypeException;
+import org.sluckframework.common.serializer.UpcastSerializedAggregateEventData;
 import org.sluckframework.domain.event.aggregate.AggregateEvent;
+import org.sluckframework.domain.identifier.Identifier;
 
 /**
  * upcast工具 用于 upcast指定 source to target 
@@ -27,8 +30,7 @@ public class UpcastUtils {
     }
 
     /**
-     * Upcasts and deserializes the given <code>entry</code> using the given <code>serializer</code> and
-     * <code>upcasterChain</code>.
+     * 转换 and 反序列化 给定的 序列化 实体  使用给定的 转换链
      * 
      * @param entry               the entry containing the data of the serialized event
      * @param aggregateIdentifier the original aggregate identifier to use 
@@ -39,7 +41,7 @@ public class UpcastUtils {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static List<AggregateEvent> upcastAndDeserialize(SerializedAggregateEventData entry,
-                                                                Object aggregateIdentifier,
+                                                                Identifier<?> aggregateIdentifier,
                                                                 Serializer serializer, UpcasterChain upcasterChain,
                                                                 boolean skipUnknownTypes) {
         SerializedAggregateEventUpcastingContext context = new SerializedAggregateEventUpcastingContext(entry, serializer);
@@ -47,7 +49,7 @@ public class UpcastUtils {
         List<AggregateEvent> events = new ArrayList<AggregateEvent>(objects.size());
         for (SerializedObject object : objects) {
             try {
-                AggregateEvent<Object> message = new SerializedAggregateEvent<Object>(
+                AggregateEvent message = new SerializedAggregateEvent<Object>(
                         new UpcastSerializedAggregateEventData(entry,
                                                             firstNonNull(aggregateIdentifier,
                                                                          entry.getAggregateIdentifier()), object),
@@ -64,8 +66,8 @@ public class UpcastUtils {
         return events;
     }
 
-    private static Object firstNonNull(Object... instances) {
-        for (Object instance : instances) {
+    private static Identifier<?> firstNonNull(Identifier<?>... instances) {
+        for (Identifier<?> instance : instances) {
             if (instance != null) {
                 return instance;
             }
