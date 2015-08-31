@@ -19,7 +19,7 @@ public class GenericEvent<T> implements EventProxy<T> {
 	private static final long serialVersionUID = 3788365038915270943L;
 	
 	private final Object identifier;
-    private final Class<T> payloadType;
+    private final Class<?> payloadType;
     private final T payload;
     private final DateTime dataTime;
     
@@ -27,22 +27,19 @@ public class GenericEvent<T> implements EventProxy<T> {
 	 * 默认使用UUID作为 事件标示符
 	 * @param payload
 	 */
-	@SuppressWarnings("unchecked")
 	public GenericEvent(T payload) {
-		this(UUID.randomUUID().toString(), payload, (Class<T>) payload.getClass(), new DateTime());
+		this(UUID.randomUUID().toString(), payload, payload.getClass(), new DateTime());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public GenericEvent(Object identifier, T payload) {
-		this(identifier, payload, (Class<T>) payload.getClass(), new DateTime());
+		this(identifier, payload, payload.getClass(), new DateTime());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public GenericEvent(Object identifier, T payload, DateTime time) {
-		this(identifier, payload, (Class<T>) payload.getClass(), time);
+		this(identifier, payload, payload.getClass(), time);
 	}
 	
-	public GenericEvent(Object identifier, T payload, Class<T> payloadType, DateTime time) {
+	public GenericEvent(Object identifier, T payload, Class<?> payloadType, DateTime time) {
 		validateIdentifier(identifier.getClass());
 		this.identifier = identifier;
 		this.payloadType = payloadType;
@@ -61,7 +58,7 @@ public class GenericEvent<T> implements EventProxy<T> {
 	}
 
 	@Override
-	public Class<T> getPayloadType() {
+	public Class<?> getPayloadType() {
 		return payloadType;
 	}
 

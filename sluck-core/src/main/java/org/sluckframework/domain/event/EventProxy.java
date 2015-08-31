@@ -29,11 +29,11 @@ public interface EventProxy<T> extends Serializable {
     T getPayload();
 	
 	/**
-	 * 获取事件的类型
+	 * 获取事件的类型 / 可能 有延迟 反序列对象 所以 payloadType 不一定就是 T
 	 * 
 	 * @return event type
 	 */
-	Class<T> getPayloadType();
+	Class<?> getPayloadType();
 	
 	 /**
      * 事件的发生时间
