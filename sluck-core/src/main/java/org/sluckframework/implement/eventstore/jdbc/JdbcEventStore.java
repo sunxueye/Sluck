@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -29,12 +28,18 @@ import org.sluckframework.domain.event.aggregate.AggregateEvent;
 import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.aggregate.GenericAggregateEvent;
 import org.sluckframework.domain.event.eventstore.EventStreamNotFoundException;
+import org.sluckframework.domain.event.eventstore.EventVisitor;
 import org.sluckframework.domain.event.eventstore.SnapshotEventStore;
+import org.sluckframework.domain.event.eventstore.query.Criteria;
+import org.sluckframework.domain.event.eventstore.query.CriteriaBuilder;
 import org.sluckframework.domain.event.eventstore.query.EventStoreQueryManagement;
 import org.sluckframework.domain.identifier.Identifier;
 import org.sluckframework.domain.repository.ConcurrencyException;
+import org.sluckframework.implement.eventstore.jdbc.criteria.JdbcCriteria;
+import org.sluckframework.implement.eventstore.jdbc.criteria.ParameterRegistry;
 
 import static org.sluckframework.domain.identifier.IdentifierValidator.validateIdentifier;
+import static org.sluckframework.cqrs.upcasting.UpcastUtils.upcastAndDeserialize;
 
 
 /**
@@ -132,9 +137,6 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SuppressWarnings({"unchecked"})
     @Override
     public AggregateEventStream readEvents(String type, Identifier<?> identifier) {
@@ -173,15 +175,15 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
     }
 
     @Override
-    public AggregateEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber) {
+    public AggregateEventStream readEvents(String type, Identifier<?> identifier, long firstSequenceNumber) {
         return readEvents(type, identifier, firstSequenceNumber, Long.MAX_VALUE);
     }
 
     @Override
-    public AggregateEventStream readEvents(String type, DomainIdentifier identifier, long firstSequenceNumber,
+    public AggregateEventStream readEvents(String type, Identifier<?> identifier, long firstSequenceNumber,
                                         long lastSequenceNumber) {
         int minimalBatchSize = (int) Math.min(batchSize, (lastSequenceNumber - firstSequenceNumber) + 2);
-        Iterator<? extends SerializedDomainEventData> entries = eventEntryStore.fetchAggregateStream(type,
+        Iterator<? extends SerializedAggregateEventData> entries = eventEntryStore.fetchAggregateStream(type,
                                                                                                      identifier,
                                                                                                      firstSequenceNumber,
                                                                                                      minimalBatchSize);
@@ -191,12 +193,6 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         return new IteratorAggregateEventStream(null, entries, identifier, lastSequenceNumber, false);
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Upon appending a snapshot, this particular EventStore implementation also prunes snapshots which are considered
-     * redundant because they fall outside of the range of maximum snapshots to archive.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public void appendSnapshotEvent(String type, AggregateEvent snapshotEvent) {
@@ -204,9 +200,8 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
         // an aggregate, which may occur when a READ_UNCOMMITTED transaction isolation level is used.
         final Class<?> dataType = eventEntryStore.getDataType();
         SerializedObject serializedPayload = serializer.serializePayload(snapshotEvent, dataType);
-        SerializedObject serializedMetaData = serializer.serializeMetaData(snapshotEvent, dataType);
         try {
-            eventEntryStore.persistSnapshot(type, snapshotEvent, serializedPayload, serializedMetaData);
+            eventEntryStore.persistSnapshot(type, snapshotEvent, serializedPayload);
         } catch (RuntimeException exception) {
             if (persistenceExceptionResolver != null
                     && persistenceExceptionResolver.isDuplicateKeyViolation(exception)) {
@@ -244,7 +239,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
     }
 
     private void doVisitEvents(EventVisitor visitor, String whereClause, List<Object> parameters) {
-        Iterator<? extends SerializedDomainEventData> batch = eventEntryStore.fetchFiltered(whereClause,
+        Iterator<? extends SerializedAggregateEventData> batch = eventEntryStore.fetchFiltered(whereClause,
                                                                                             parameters,
                                                                                             batchSize
         );
@@ -259,23 +254,18 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
     }
 
     /**
-     * Sets the persistenceExceptionResolver that will help detect concurrency exceptions from the backing database.
+     * 设置 持久化异常 解析器 来帮助解决 同步异常问题
      *
-     * @param persistenceExceptionResolver the persistenceExceptionResolver that will help detect concurrency
-     *                                     exceptions
+     * @param persistenceExceptionResolver help detect concurrency exceptions
      */
     public void setPersistenceExceptionResolver(PersistenceExceptionResolver persistenceExceptionResolver) {
         this.persistenceExceptionResolver = persistenceExceptionResolver;
     }
 
     /**
-     * Sets the number of events that should be read at each database access. When more than this number of events must
-     * be read to rebuild an aggregate's state, the events are read in batches of this size. Defaults to 100.
-     * <p/>
-     * Tip: if you use a snapshotter, make sure to choose snapshot trigger and batch size such that a single batch will
-     * generally retrieve all events required to rebuild an aggregate's state.
+     * 批量从数据库抓取事件的数量，只有 需要重构聚合的数量大于设置的数才批量抓取
      *
-     * @param batchSize the number of events to read on each database access. Default to 100.
+     * @param batchSize the number of events to read on each database access
      */
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
@@ -287,14 +277,8 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
     }
 
     /**
-     * Sets the maximum number of snapshots to archive for an aggregate. The EventStore will keep at most this number
-     * of
-     * snapshots per aggregate.
-     * <p/>
-     * Defaults to {@value #DEFAULT_MAX_SNAPSHOTS_ARCHIVED}.
-     *
-     * @param maxSnapshotsArchived The maximum number of snapshots to archive for an aggregate. A value less than 1
-     *                             disables pruning of snapshots.
+     * 设置一个聚合能有持有的快照的最大数量
+     * @param maxSnapshotsArchived The maximum number of snapshots to archive for an aggregate
      */
     public void setMaxSnapshotsArchived(int maxSnapshotsArchived) {
         this.maxSnapshotsArchived = maxSnapshotsArchived;
