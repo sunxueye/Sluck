@@ -1,10 +1,8 @@
 package org.sluckframework.common.serializer;
 
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.sluckframework.domain.event.EventProxy;
-
+import org.sluckframework.domain.event.aggregate.GenericEvent;
 
 /**
  * 序列化的 事件 in信息
@@ -20,18 +18,20 @@ public class SerializedEventProxy<T> implements EventProxy<T>, SerializationAwar
 	private static final ConverterFactory CONVERTER_FACTORY = new ChainingConverterFactory();
     private final DateTime timestamp;
 
-    private final String identifier;
+    private final Object identifier;
     private final LazyDeserializingObject<T> serializedPayload;
 
-    public SerializedEventProxy(String eventIdentifier, DateTime timestamp,
+    public SerializedEventProxy(Object eventIdentifier, DateTime timestamp,
     		SerializedObject<?> serializedPayload,Serializer serializer) {
         this.identifier = eventIdentifier;
         this.serializedPayload = new LazyDeserializingObject<T>(serializedPayload, serializer);
         this.timestamp = timestamp;
     }
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public <R> SerializedObject<R> serializePayload(Serializer serializer, Class<R> expectedRepresentation) {
-        if (serializer.equals(serializedPayload.getSerializer())) {
+    	if (serializer.equals(serializedPayload.getSerializer())) {
             final SerializedObject serializedObject = serializedPayload.getSerializedObject();
             return CONVERTER_FACTORY.getConverter(serializedObject.getContentType(), expectedRepresentation)
                     .convert(serializedObject);
@@ -40,47 +40,31 @@ public class SerializedEventProxy<T> implements EventProxy<T>, SerializationAwar
     }
 
     @Override
-    public <R> SerializedObject<R> serializePayload(Serializer serializer, Class<R> expectedRepresentation) {
-        return message.serializePayload(serializer, expectedRepresentation);
+    public Object getIdentifier() {
+        return identifier;
     }
 
     @Override
-    public <R> SerializedObject<R> serializeMetaData(Serializer serializer, Class<R> expectedRepresentation) {
-        return message.serializeMetaData(serializer, expectedRepresentation);
-    }
-
-    @Override
-    public String getIdentifier() {
-        return message.getIdentifier();
-    }
-
-    @Override
-    public DateTime getTimestamp() {
+    public DateTime occurredOn() {
         return timestamp;
     }
 
     @Override
-    public MetaData getMetaData() {
-        return message.getMetaData();
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Override
     public T getPayload() {
-        return message.getPayload();
+        return serializedPayload.getObject();
     }
 
-    @Override
-    public Class getPayloadType() {
-        return message.getPayloadType();
+	@Override
+    public Class<?> getPayloadType() {
+        return serializedPayload.getType();
     }
 
     public boolean isPayloadDeserialized() {
-        return message.isPayloadDeserialized();
+        return serializedPayload.isDeserialized();
     }
 
     protected Object writeReplace() {
-        return new GenericEventMessage<T>(getIdentifier(), getTimestamp(), getPayload(), getMetaData());
+        return new GenericEvent<T>(getIdentifier(), getPayload(), getPayloadType(), occurredOn());
     }
 
 }
