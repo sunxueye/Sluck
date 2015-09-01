@@ -332,8 +332,7 @@ public class JdbcEventStore implements SnapshotEventStore, EventStoreQueryManage
             while (!currentBatch.hasNext() && iterator.hasNext()) {
                 final SerializedAggregateEventData entry = iterator.next();
                 currentBatch = upcastAndDeserialize(entry, aggregateIdentifier, serializer, upcasterChain,
-                                                    skipUnknownTypes)
-                        .iterator();
+                                                    skipUnknownTypes).iterator();
             }
             next = currentBatch.hasNext() ? currentBatch.next() : null;
         }
