@@ -37,6 +37,11 @@ public class AggregateEventContainer implements Serializable {
 	public AggregateEventContainer(Identifier<?> aggregateIdentifier) {
 		this.aggregateIdentifier = aggregateIdentifier;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T> AggregateEvent addPayload(T payload) {
+		return addEvent(new GenericAggregateEvent(aggregateIdentifier, newSequenceNumber(), payload));
+	}
 
 	/**
 	 * 增加事件到容器中，需要注意事件的顺序
@@ -118,6 +123,14 @@ public class AggregateEventContainer implements Serializable {
 		if (registrationCallbacks != null) {
 			registrationCallbacks.clear();
 		}
+	}
+	
+	private long newSequenceNumber() {
+		Long currentSequenceNumber = getLastSequenceNumber();
+		if (currentSequenceNumber == null) {
+			return 0;
+		}
+		return currentSequenceNumber + 1;
 	}
 
 	public int size() {
