@@ -36,6 +36,10 @@ public abstract class AbstractAggregateRoot<ID extends Identifier<?>> implements
 	protected AggregateEvent registerEvent(AggregateEvent event) {
         return getEventContainer().addEvent(event);
     }
+	
+	protected <T> AggregateEvent registerPayload(T event) {
+        return getEventContainer().addPayload(event);
+    }
 
     protected void markDeleted() {
         this.deleted = true;
