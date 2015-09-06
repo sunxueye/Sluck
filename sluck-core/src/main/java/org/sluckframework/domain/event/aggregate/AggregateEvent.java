@@ -13,7 +13,6 @@ import org.sluckframework.domain.identifier.Identifier;
  */
 public interface AggregateEvent<T, AID extends Identifier<?>> extends EventProxy<T> {
 	
-	
 	/**
 	 * 产生聚合事件的 聚合根标识符
 	 * 
@@ -27,6 +26,4 @@ public interface AggregateEvent<T, AID extends Identifier<?>> extends EventProxy
 	 * @return sequence
 	 */
 	long getSequenceNumber();
-	
-	
 }
