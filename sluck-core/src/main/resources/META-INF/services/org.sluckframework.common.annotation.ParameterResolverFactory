@@ -1,0 +1,4 @@
+org.sluckframework.common.annotation.DefaultParameterResolverFactory
+org.sluckframework.cqrs.commandhandling.annotation.CurrentUnitOfWorkParameterResolverFactory
+org.sluckframework.cqrs.eventhanding.annotation.SequenceNumberParameterResolverFactory
+org.sluckframework.cqrs.eventhanding.annotation.TimestampParameterResolverFactory
