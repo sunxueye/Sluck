@@ -17,7 +17,7 @@ import org.sluckframework.domain.event.EventProxy;
 
 
 /**
- * 根据指定注解 执行方法 
+ * 根据指定 handlerDefiner 找到目标类中  对应的 执行方法 
  * 
  * @author sunxy
  * @time 2015年9月6日 下午3:14:23	
