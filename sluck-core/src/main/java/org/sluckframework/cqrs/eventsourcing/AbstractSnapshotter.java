@@ -58,7 +58,7 @@ public abstract class AbstractSnapshotter implements Snapshotter {
      * @param eventStream         The event stream containing the aggregate's past events
      * @return the snapshot event for the given events, or <code>null</code> if none should be stored.
      */
-    protected abstract AggregateEvent createSnapshot(String typeIdentifier, Object aggregateIdentifier,
+    protected abstract AggregateEvent createSnapshot(String typeIdentifier, Identifier<?> aggregateIdentifier,
                                                          AggregateEventStream eventStream);
 
     /**
