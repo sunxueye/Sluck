@@ -67,7 +67,7 @@ public abstract class AbstractAnnotatedAggregateRoot<ID extends Identifier<?>> e
     }
 
     /**
-     * 创建一个 ParameterResolverFactory 用于 聚合根解析 @EventSourcingHandler
+     * 创建一个 ParameterResolverFactory 用于 聚合根解析 @EventSourcingHandler等注解
      *
      * @return the parameter resolver with which to resolve parameters for event handler methods.
      */
