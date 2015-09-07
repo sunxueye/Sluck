@@ -13,6 +13,8 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.common.exception.Assert;
+import org.sluckframework.common.serializer.Serializer;
+import org.sluckframework.common.thread.SluckThreadFactory;
 import org.sluckframework.cqrs.commandhandling.Command;
 import org.sluckframework.cqrs.commandhandling.CommandBus;
 import org.sluckframework.cqrs.commandhandling.CommandCallback;
@@ -21,9 +23,16 @@ import org.sluckframework.cqrs.commandhandling.CommandHandler;
 import org.sluckframework.cqrs.commandhandling.CommandHandlerInterceptor;
 import org.sluckframework.cqrs.commandhandling.CommandTargetResolver;
 import org.sluckframework.cqrs.commandhandling.NoHandlerForCommandException;
+import org.sluckframework.cqrs.commandhandling.interceptors.SerializationOptimizingInterceptor;
 import org.sluckframework.cqrs.eventhanding.EventBus;
+import org.sluckframework.cqrs.eventsourcing.AggregateFactory;
+import org.sluckframework.cqrs.eventsourcing.EventSourcedAggregateRoot;
+import org.sluckframework.cqrs.eventsourcing.EventStreamDecorator;
 import org.sluckframework.cqrs.unitofwork.TransactionManager;
+import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.eventstore.AggregateEventStore;
+import org.sluckframework.domain.identifier.Identifier;
+import org.sluckframework.domain.repository.Repository;
 
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
@@ -61,10 +70,7 @@ public class DisruptorCommandBus implements CommandBus {
     private volatile boolean disruptorShutDown = false;
 
     /**
-     * Initialize the DisruptorCommandBus with given resources, using default configuration settings. Uses a Blocking
-     * WaitStrategy on a RingBuffer of size 4096. The (2) Threads required for command execution are created
-     * immediately. Additional threads are used to invoke response callbacks and to initialize a recovery process in
-     * the case of errors.
+     * 使用给定的 属性 初始化， 使用默认的 disruptor配置
      *
      * @param AggregateEventStore The AggregateEventStore where generated events must be stored
      * @param eventBus   The EventBus where generated events must be published
@@ -74,15 +80,14 @@ public class DisruptorCommandBus implements CommandBus {
     }
 
     /**
-     * Initialize the DisruptorCommandBus with given resources and settings. The Threads required for command
-     * execution are immediately requested from the Configuration's Executor, if any. Otherwise, they are created.
+     * 用给定的 属性 初始化
      *
      * @param AggregateEventStore    The AggregateEventStore where generated events must be stored
      * @param eventBus      The EventBus where generated events must be published
      * @param configuration The configuration for the command bus
      */
-    @SuppressWarnings("unchecked")
-    public DisruptorCommandBus(AggregateEventStore AggregateEventStore, EventBus eventBus,
+    @SuppressWarnings("rawtypes")
+	public DisruptorCommandBus(AggregateEventStore AggregateEventStore, EventBus eventBus,
                                DisruptorConfiguration configuration) {
         Assert.notNull(AggregateEventStore, "AggregateEventStore may not be null");
         Assert.notNull(eventBus, "eventBus may not be null");
@@ -90,7 +95,7 @@ public class DisruptorCommandBus implements CommandBus {
         Executor executor = configuration.getExecutor();
         if (executor == null) {
             executorService = Executors.newCachedThreadPool(
-                    new AxonThreadFactory(DISRUPTOR_THREAD_GROUP));
+                    new SluckThreadFactory(DISRUPTOR_THREAD_GROUP));
             executor = executorService;
         } else {
             executorService = null;
@@ -130,7 +135,8 @@ public class DisruptorCommandBus implements CommandBus {
         disruptor.start();
     }
 
-    private EventPublisher[] initializePublisherThreads(AggregateEventStore AggregateEventStore, EventBus eventBus,
+    @SuppressWarnings("rawtypes")
+	private EventPublisher[] initializePublisherThreads(AggregateEventStore AggregateEventStore, EventBus eventBus,
                                                         DisruptorConfiguration configuration, Executor executor,
                                                         TransactionManager transactionManager) {
         EventPublisher[] publishers = new EventPublisher[configuration.getPublisherThreadCount()];
@@ -179,14 +185,14 @@ public class DisruptorCommandBus implements CommandBus {
     }
 
     /**
-     * Forces a dispatch of a command. This method should be used with caution. It allows commands to be retried during
-     * the cooling down period of the disruptor.
+     * 转发命令， 当 cooling down 周期内 会 重试 命令
      *
      * @param command  The command to dispatch
      * @param callback The callback to notify when command handling is completed
      * @param <R>      The expected return type of the command
      */
-    public <R> void doDispatch(Command command, CommandCallback<R> callback) {
+    @SuppressWarnings("rawtypes")
+	public <R> void doDispatch(Command command, CommandCallback<R> callback) {
         Assert.state(!disruptorShutDown, "Disruptor has been shut down. Cannot dispatch or re-dispatch commands");
         final CommandHandler<?> commandHandler = commandHandlers.get(command.getCommandName());
         if (commandHandler == null) {
@@ -230,41 +236,34 @@ public class DisruptorCommandBus implements CommandBus {
     }
 
     /**
-     * Creates a repository instance for an Event Sourced aggregate that is created by the given
-     * <code>aggregateFactory</code>.
-     * <p/>
-     * The repository returned must be used by Command Handlers subscribed to this Command Bus for loading aggregate
-     * instances. Using any other repository instance may result in undefined outcome (a.k.a. concurrency problems).
+     * 为 从聚合工厂中创建的实例聚合实例创建 仓储
+     * 此仓储必须 被 订阅了 此commandbus的 命令处理器 使用，不能被其他实例使用，不然会有并发问题
      *
      * @param aggregateFactory The factory creating uninitialized instances of the Aggregate
      * @param <T>              The type of aggregate to create the repository for
      * @return the repository that provides access to stored aggregates
      */
-    public <T extends EventSourcedAggregateRoot> Repository<T> createRepository(AggregateFactory<T> aggregateFactory) {
+    @SuppressWarnings("rawtypes")
+	public <T extends EventSourcedAggregateRoot> Repository createRepository(AggregateFactory<T> aggregateFactory) {
         return createRepository(aggregateFactory, NoOpEventStreamDecorator.INSTANCE);
     }
 
     /**
-     * Creates a repository instance for an Event Sourced aggregate that is created by the given
-     * <code>aggregateFactory</code>. The given <code>decorator</code> is used to decorate event streams.
-     * <p/>
-     * The repository returned must be used by Command Handlers subscribed to this Command Bus for loading aggregate
-     * instances. Using any other repository instance may result in undefined outcome (a.k.a. concurrency problems).
-     * <p/>
-     * Note that a second invocation of this method with an aggregate factory for the same aggregate type <em>may</em>
-     * return the same instance as the first invocation, even if the given <code>decorator</code> is different.
+     * 为 从聚合工厂中创建的实例聚合实 例创建 仓储 使用 只指定的 包装流
+     * 此仓储必须 被 订阅了 此commandbus的 命令处理器 使用，不能被其他实例使用，不然会有并发问题厂
      *
      * @param aggregateFactory The factory creating uninitialized instances of the Aggregate
      * @param decorator        The decorator to decorate events streams with
      * @param <T>              The type of aggregate to create the repository for
      * @return the repository that provides access to stored aggregates
      */
-    public <T extends EventSourcedAggregateRoot> Repository<T> createRepository(AggregateFactory<T> aggregateFactory,
+    @SuppressWarnings("rawtypes")
+	public <T extends EventSourcedAggregateRoot> Repository createRepository(AggregateFactory<T> aggregateFactory,
                                                                                 EventStreamDecorator decorator) {
         for (CommandHandlerInvoker invoker : commandHandlerInvokers) {
             invoker.createRepository(aggregateFactory, decorator);
         }
-        return new DisruptorRepository<T>(aggregateFactory.getTypeIdentifier());
+        return new DisruptorRepository(aggregateFactory.getTypeIdentifier());
     }
 
     @Override
@@ -278,9 +277,7 @@ public class DisruptorCommandBus implements CommandBus {
     }
 
     /**
-     * Shuts down the command bus. It no longer accepts new commands, and finishes processing commands that have
-     * already been published. This method will not shut down any executor that has been provided as part of the
-     * Configuration.
+     * 关闭 commandbus,不再接受新的命令，并转发已有的命令
      */
     public void stop() {
         if (!started) {
@@ -314,7 +311,8 @@ public class DisruptorCommandBus implements CommandBus {
         }
     }
 
-    private static class DisruptorRepository<T extends EventSourcedAggregateRoot> implements Repository<T> {
+	private static class DisruptorRepository<T extends EventSourcedAggregateRoot<ID>, ID extends Identifier<?>>
+			implements Repository<T, ID> {
 
         private final String typeIdentifier;
 
@@ -324,20 +322,23 @@ public class DisruptorCommandBus implements CommandBus {
 
         @SuppressWarnings("unchecked")
         @Override
-        public T load(Object aggregateIdentifier, Long expectedVersion) {
+        public T load(ID aggregateIdentifier, Long expectedVersion) {
             return (T) CommandHandlerInvoker.getRepository(typeIdentifier).load(aggregateIdentifier, expectedVersion);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public T load(Object aggregateIdentifier) {
+        public T load(ID aggregateIdentifier) {
             return (T) CommandHandlerInvoker.getRepository(typeIdentifier).load(aggregateIdentifier);
         }
 
-        @Override
+        @SuppressWarnings("unchecked")
+		@Override
         public void add(T aggregate) {
             CommandHandlerInvoker.getRepository(typeIdentifier).add(aggregate);
         }
+
+
     }
 
     private static class NoOpEventStreamDecorator implements EventStreamDecorator {
@@ -345,14 +346,15 @@ public class DisruptorCommandBus implements CommandBus {
         public static final EventStreamDecorator INSTANCE = new NoOpEventStreamDecorator();
 
         @Override
-        public DomainEventStream decorateForRead(String aggregateType, Object aggregateIdentifier,
-                                                 DomainEventStream eventStream) {
+        public AggregateEventStream decorateForRead(String aggregateType, Object aggregateIdentifier,
+                                                 AggregateEventStream eventStream) {
             return eventStream;
         }
 
-        @Override
-        public DomainEventStream decorateForAppend(String aggregateType, EventSourcedAggregateRoot aggregate,
-                                                   DomainEventStream eventStream) {
+        @SuppressWarnings("rawtypes")
+		@Override
+        public AggregateEventStream decorateForAppend(String aggregateType, EventSourcedAggregateRoot aggregate,
+                                                   AggregateEventStream eventStream) {
             return eventStream;
         }
     }
