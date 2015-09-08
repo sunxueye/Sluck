@@ -149,7 +149,7 @@ public class DisruptorUnitOfWork implements UnitOfWork, EventRegistrationCallbac
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends AggregateRoot> T registerAggregate(T aggregateRoot, EventBus eventBus,
+    public <T extends AggregateRoot<?>> T registerAggregate(T aggregateRoot, EventBus eventBus,
                                                          SaveAggregateCallback<T> saveAggregateCallback) {
         if (aggregateType == null) {
             throw new IllegalStateException(

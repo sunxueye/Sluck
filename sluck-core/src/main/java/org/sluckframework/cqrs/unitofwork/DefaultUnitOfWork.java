@@ -139,7 +139,7 @@ public class DefaultUnitOfWork extends NestableUnitOfWork {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public <T extends AggregateRoot> T registerAggregate(final T aggregate, final EventBus eventBus,
+    public <T extends AggregateRoot<?>> T registerAggregate(final T aggregate, final EventBus eventBus,
                                                          SaveAggregateCallback<T> saveAggregateCallback) {
         T similarAggregate = (T) findSimilarAggregate(aggregate.getClass(), aggregate.getIdentifier());
         if (similarAggregate != null) {
@@ -292,7 +292,7 @@ public class DefaultUnitOfWork extends NestableUnitOfWork {
         return Collections.unmodifiableList(events);
     }
 
-    private static class AggregateAndSaveCallback<T extends AggregateRoot> {
+    private static class AggregateAndSaveCallback<T extends AggregateRoot<?>> {
 
         private final T aggregateRoot;
         private final SaveAggregateCallback<T> callback;

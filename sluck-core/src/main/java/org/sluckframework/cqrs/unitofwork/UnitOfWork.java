@@ -67,7 +67,7 @@ public interface UnitOfWork {
      * @return The actual aggregate instance to use
      */
     @SuppressWarnings("rawtypes")
-	<T extends AggregateRoot> T registerAggregate(T aggregateRoot, EventBus eventBus,
+	<T extends AggregateRoot<?>> T registerAggregate(T aggregateRoot, EventBus eventBus,
                                                   SaveAggregateCallback<T> saveAggregateCallback);
 
     /**
