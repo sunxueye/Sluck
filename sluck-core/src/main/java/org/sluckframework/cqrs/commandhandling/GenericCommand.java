@@ -39,7 +39,6 @@ public class GenericCommand<T> implements Command<T> {
      * 使用 payload 创建命令
      *
      * @param payload     the payload for the Message
-     * @param newMetaData The meta data for this message
      */
     public GenericCommand(T payload) {
         this(payload.getClass().getName(), payload);
@@ -50,7 +49,6 @@ public class GenericCommand<T> implements Command<T> {
      *
      * @param commandName The name of the command
      * @param payload     the payload for the Message
-     * @param newMetaData The meta data for this message
      */
     public GenericCommand(String commandName, T payload) {
         this.commandName = commandName;
@@ -78,7 +76,6 @@ public class GenericCommand<T> implements Command<T> {
      * 复制 original 命令属性
      *
      * @param original The original message
-     * @param metaData The MetaData for the new message
      */
     protected GenericCommand(GenericCommand<T> original) {
         this.identifier = original.getIdentifier();
