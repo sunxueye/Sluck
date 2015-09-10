@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.sluckframework.cqrs.eventsourcing.annotation.AbstractAnnotatedHandlerDefinition;
 import org.sluckframework.domain.event.EventProxy;
 
 

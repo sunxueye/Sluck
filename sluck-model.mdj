@@ -1478,7 +1478,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+T getPayload()",
+											"text": "+R getPayload()",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -7857,7 +7857,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+T convert(S original)",
+											"text": "+R convert(S original)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										}
@@ -10644,7 +10644,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+void add(T aggregate)",
+											"text": "+void add(R aggregate)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -10672,7 +10672,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+T load(T aid)",
+											"text": "+R load(R aid)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -10700,7 +10700,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+doSaveWithLock(T aggregate)",
+											"text": "+doSaveWithLock(R aggregate)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -10728,7 +10728,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+T doLoadWithLock(T aid)",
+											"text": "+R doLoadWithLock(R aid)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										}
@@ -11043,7 +11043,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+void obtainLock(T aid)",
+											"text": "+void obtainLock(R aid)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										},
@@ -11071,7 +11071,7 @@
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
-											"text": "+void releaseLock(T aid)",
+											"text": "+void releaseLock(R aid)",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										}
@@ -28741,7 +28741,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFPfVlTIfZsBH0="
 							},
-							"name": "T getPayload",
+							"name": "R getPayload",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -30015,7 +30015,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFPfbx1CU2iEIU="
 							},
-							"name": "T convert",
+							"name": "R convert",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -30330,7 +30330,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia6jPIcRI0s="
 									},
-									"name": "T aggregate",
+									"name": "R aggregate",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
@@ -30351,7 +30351,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFPiayWr3ikJJw="
 							},
-							"name": "T load",
+							"name": "R load",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -30362,7 +30362,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia8XwojInGg="
 									},
-									"name": "T aid",
+									"name": "R aid",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
@@ -30394,7 +30394,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia9UPYn6UIE="
 									},
-									"name": "T aggregate",
+									"name": "R aggregate",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
@@ -30415,7 +30415,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFPiayWr3ikJJw="
 							},
-							"name": "T doLoadWithLock",
+							"name": "R doLoadWithLock",
 							"visibility": "public",
 							"isStatic": false,
 							"isLeaf": false,
@@ -30426,7 +30426,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia+KR4ssWV0="
 									},
-									"name": "T aid",
+									"name": "R aid",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
@@ -30486,7 +30486,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia1lHn+9vLk="
 									},
-									"name": "T aid",
+									"name": "R aid",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
@@ -30518,7 +30518,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFPia3kLIEx7sE="
 									},
-									"name": "T aid",
+									"name": "R aid",
 									"visibility": "public",
 									"isStatic": false,
 									"isLeaf": false,
