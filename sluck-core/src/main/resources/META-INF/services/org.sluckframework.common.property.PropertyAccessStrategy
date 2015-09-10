@@ -1,0 +1,2 @@
+org.sluckframework.common.property.UniformPropertyAccessStrategy
+org.sluckframework.common.property.BeanPropertyAccessStrategy
