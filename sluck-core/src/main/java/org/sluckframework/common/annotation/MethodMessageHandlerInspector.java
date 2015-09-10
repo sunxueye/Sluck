@@ -1,18 +1,14 @@
 package org.sluckframework.common.annotation;
 
-import static org.sluckframework.common.util.ReflectionUtils.methodsOf;
+import org.sluckframework.domain.event.EventProxy;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.sluckframework.domain.event.EventProxy;
+import static org.sluckframework.common.util.ReflectionUtils.methodsOf;
 
 
 /**
@@ -137,7 +133,7 @@ public class MethodMessageHandlerInspector {
      * @return the list of handlers found on target type
      */
     public List<MethodMessageHandler> getHandlers() {
-        return new ArrayList<MethodMessageHandler>(handlers);
+        return new ArrayList<>(handlers);
     }
 
     /**
