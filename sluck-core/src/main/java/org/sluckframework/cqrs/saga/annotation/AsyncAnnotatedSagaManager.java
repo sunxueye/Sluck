@@ -54,9 +54,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
 
 
     /**
-     * Initializes an Asynchronous Saga Manager using default values for the given <code>sagaTypes</code>.
-     * <p/>
-     * After initialization, the SagaManager must be explicitly started using the {@link #start()} method.
+     * 使用指定的 sagaType 初始化
      *
      * @param sagaTypes The types of Saga this saga manager will process incoming events for
      */
@@ -67,9 +65,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Initializes an Asynchronous Saga Manager using default values for the given <code>sagaTypes</code>.
-     * <p/>
-     * After initialization, the SagaManager must be explicitly started using the {@link #start()} method.
+     * 使用指定的参数工厂和 sagaType 初始化
      *
      * @param parameterResolverFactory The parameter resolver factory to resolve parameters of annotated handlers
      * @param sagaTypes                The types of Saga this saga manager will process incoming events for
@@ -81,8 +77,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Starts the Saga Manager by starting the processor threads and subscribes it with the <code>eventBus</code>. If
-     * the saga manager is already started, it is only re-subscribed to the event bus.
+     * 开始管理器
      */
     public synchronized void start() {
         if (disruptor == null) {
@@ -103,11 +98,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Unsubscribes this Saga Manager from the event bus and stops accepting new events. The method is blocked until
-     * all scheduled events have been processed. Note that any manually provided Executors using ({@link
-     * #setExecutor(java.util.concurrent.Executor)} are not shut down.
-     * <p/>
-     * If the Saga Manager was already stopped, nothing happens.
+     * 停止 saga 管理器
      */
     public synchronized void stop() {
         sagaManagerStatus.setStatus(false);
@@ -159,12 +150,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the executor that provides the threads for the processors. Note that you must ensure that this executor
-     * is capable of delivering <em>all</em> of the required threads at once. If that is not the case, the Saga Manager
-     * might hang while waiting for the executor to provide them. Must be set <em>before</em> the SagaManager is
-     * started.
-     * <p/>
-     * By default, a thread is created for each processor.
+     * 配置执行器
      *
      * @param executor the executor that provides the threads for the processors
      * @see #setProcessorCount(int)
@@ -176,10 +162,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the saga repository to store and load Sagas from. Must be set <em>before</em> the SagaManager is
-     * started.
-     * <p/>
-     * Defaults to an in-memory repository.
+     * 配置 saga 仓储
      *
      * @param sagaRepository the saga repository to store and load Sagas from
      */
@@ -189,10 +172,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the SagaFactory responsible for creating new Saga instances when required. Must be set <em>before</em> the
-     * SagaManager is started.
-     * <p/>
-     * Defaults to a {@link GenericSagaFactory} instance.
+     * 配置 saga factory
      *
      * @param sagaFactory the SagaFactory responsible for creating new Saga instances
      */
@@ -202,8 +182,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the ErrorHandler instance, which defines the behavior in case an error occurs while loading or invoking
-     * Sagas for an incoming Event.
+     * 配置错误处理器
      *
      * @param errorHandler the error handler to notify when an error occurs
      */
@@ -212,11 +191,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the TransactionManager used to manage any transactions required by the underlying storage mechanism. Note
-     * that batch sizes set by this transaction manager are ignored. Must be set <em>before</em> the
-     * SagaManager is started.
-     * <p/>
-     * By default, no transactions are managed.
+     * 配置事务管理器
      *
      * @param transactionManager the TransactionManager used to manage any transactions required by the underlying
      *                           storage mechanism.
@@ -227,11 +202,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the number of processors (threads) to process events with. Ensure that the given {@link
-     * #setExecutor(java.util.concurrent.Executor) executor} is capable of processing this amount of concurrent tasks.
-     * Must be set <em>before</em> the SagaManager is started.
-     * <p/>
-     * Defaults to 1.
+     * 配置执行事件处理的线程数量
      *
      * @param processorCount the number of processors (threads) to process events with
      */
@@ -241,12 +212,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the amount of time (in milliseconds) the AsyncSagaManager will wait for the async processors to be assigned
-     * a thread from the executor. This is used to ensure that the executor provides a thread for the processors,
-     * instead of queueing them. This typically occurs when using a thread pool with a core pool size smaller than the
-     * processorCount.
-     * <p/>
-     * Must be set before calling {@link #start()}. Defaults to 5000 (5 seconds).
+     * 设置 从线程池等待线程的时间
      *
      * @param startTimeout the number of millis to wait for the processor to have been assigned a thread. Defaults to
      *                     5000 (5 seconds).
@@ -256,12 +222,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the size of the processing buffer. This is equal to the amount of events that may awaiting for processing
-     * before the input is blocked. Must be set <em>before</em> the SagaManager is started.
-     * <p/>
-     * Note that this value <em>must</em> be a power of 2.
-     * <p/>
-     * Defaults to 512.
+     * 配置 ringbuffer size
      *
      * @param bufferSize The size of the processing buffer. Must be a power of 2.
      */
@@ -272,9 +233,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Sets the WaitStrategy to use when event processors need to wait for incoming events.
-     * <p/>
-     * Defaults to a BlockingWaitStrategy.
+     * 设置等待策略
      *
      * @param waitStrategy the WaitStrategy to use when event processors need to wait for incoming events
      */
@@ -329,7 +288,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     }
 
     /**
-     * Exposes the running state of the SagaManager.
+     * 运气时 saga管理器 状态
      */
     static class SagaManagerStatus {
 
@@ -339,31 +298,16 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
             isRunning = running;
         }
 
-        /**
-         * Indicates whether the SagaManager that provided this instance is (still) running.
-         *
-         * @return <code>true</code> if the SagaManager is running, otherwise <code>false</code>
-         */
         public boolean isRunning() {
             return isRunning;
         }
     }
 
-    /**
-     * Executor wrapper that checks whether a given task is executed immediately.
-     */
     private static class ValidatingExecutor implements Executor {
 
         private final Executor delegate;
         private final long timeoutMillis;
 
-        /**
-         * Initialize the Executor that delegates to the given <code>executor</code> and wait for at most
-         * <code>timeoutMillis</code> for tasks to actually start.
-         *
-         * @param executor      The executor expected to provide a thread for execution
-         * @param timeoutMillis The maximum amount of time to wait for the thread to pick up the task
-         */
         public ValidatingExecutor(Executor executor, long timeoutMillis) {
             this.delegate = executor;
             this.timeoutMillis = timeoutMillis;
@@ -385,17 +329,11 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
         }
     }
 
-    /**
-     * Runnable implementation that exposes the fact it has started executing.
-     */
     private static class StartDetectingRunnable implements Runnable {
 
         private final Runnable delegate;
         private final CountDownLatch cdl = new CountDownLatch(1);
 
-        /**
-         * @param command The actual runnable to execute
-         */
         public StartDetectingRunnable(Runnable command) {
             this.delegate = command;
         }
@@ -406,15 +344,6 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
             delegate.run();
         }
 
-        /**
-         * Indicates whether the task has started, potentially waiting for the given <code>timeout</code>.
-         *
-         * @param timeout The amount of time to wait for the process to start
-         * @param unit    The unit of time
-         * @return whether the task has started or not
-         *
-         * @throws InterruptedException when the thread receives an interrupt while waiting for the start notification
-         */
         public boolean awaitStarted(long timeout, TimeUnit unit) throws InterruptedException {
             return cdl.await(timeout, unit);
         }

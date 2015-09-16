@@ -3,7 +3,6 @@ package org.sluckframework.cqrs.saga.annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.common.annotation.AbstractAnnotatedHandlerDefinition;
-import org.sluckframework.common.annotation.MethodMessageHandler;
 import org.sluckframework.common.annotation.MethodMessageHandlerInspector;
 import org.sluckframework.common.annotation.ParameterResolverFactory;
 import org.sluckframework.cqrs.saga.AssociationValue;
@@ -15,6 +14,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * 从注解的saga解析出事件处理器的配置信息
@@ -66,9 +66,9 @@ public class SagaMethodMessageHandlerInspector<T extends AbstractAnnotatedSaga> 
         MethodMessageHandlerInspector inspector = MethodMessageHandlerInspector.getInstance(
                 sagaType, parameterResolverFactory, true,
                 AnnotatedHandlerDefinition.INSTANCE);
-        for (MethodMessageHandler handler : inspector.getHandlers()) {
-            handlers.add(SagaMethodMessageHandler.getInstance(handler));
-        }
+        handlers.addAll(inspector.getHandlers().stream()
+                .map(SagaMethodMessageHandler::getInstance)
+                .collect(Collectors.toList()));
         this.sagaType = sagaType;
     }
 
@@ -80,11 +80,9 @@ public class SagaMethodMessageHandlerInspector<T extends AbstractAnnotatedSaga> 
      */
     public List<SagaMethodMessageHandler> getMessageHandlers(EventProxy<?> event) {
         List<SagaMethodMessageHandler> found = new ArrayList<>(1);
-        for (SagaMethodMessageHandler handler : handlers) {
-            if (handler.matches(event)) {
-                found.add(handler);
-            }
-        }
+        found.addAll(handlers.stream()
+                .filter(handler -> handler.matches(event))
+                .collect(Collectors.toList()));
         return found;
     }
 
