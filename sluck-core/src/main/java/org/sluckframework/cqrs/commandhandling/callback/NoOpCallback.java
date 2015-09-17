@@ -20,6 +20,7 @@ public class NoOpCallback implements CommandCallback<Object> {
      */
     @Override
     public void onSuccess(Object result) {
+        System.out.print("success");
     }
 
     /**

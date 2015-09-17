@@ -152,16 +152,16 @@ public final class AsyncSagaEventProcessor implements EventHandler<AsyncSagaProc
                 for (AssociationValue associationValue : entry.getAssociationValues()) {
                     sagaIds.addAll(sagaRepository.find(entry.getSagaType(), associationValue));
                 }
-                for (String sagaId : sagaIds) {
-                    if (ownedByCurrentProcessor(sagaId) && !processedSagas.containsKey(sagaId)) {
-                        ensureActiveUnitOfWork();
-                        final Saga saga = sagaRepository.load(sagaId);
-                        if (parameterResolverFactory != null) {
-                            ((AbstractAnnotatedSaga) saga).registerParameterResolverFactory(parameterResolverFactory);
-                        }
-                        processedSagas.put(sagaId, saga);
+                sagaIds.stream()
+                        .filter(sagaId -> ownedByCurrentProcessor(sagaId) && !processedSagas.containsKey(sagaId))
+                        .forEach(sagaId -> {
+                    ensureActiveUnitOfWork();
+                    final Saga saga = sagaRepository.load(sagaId);
+                    if (parameterResolverFactory != null) {
+                        ((AbstractAnnotatedSaga) saga).registerParameterResolverFactory(parameterResolverFactory);
                     }
-                }
+                    processedSagas.put(sagaId, saga);
+                });
             } catch (Exception e) {
                 RetryPolicy retryPolicy = errorHandler.onErrorPreparing(entry.getSagaType(),
                         entry.getPublishedEvent(),

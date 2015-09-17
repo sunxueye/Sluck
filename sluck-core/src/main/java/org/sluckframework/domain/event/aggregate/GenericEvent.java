@@ -1,9 +1,9 @@
 package org.sluckframework.domain.event.aggregate;
 
-import java.util.UUID;
-
 import org.joda.time.DateTime;
 import org.sluckframework.domain.event.EventProxy;
+
+import java.util.UUID;
 
 import static org.sluckframework.domain.identifier.IdentifierValidator.validateIdentifier;
 
@@ -45,6 +45,16 @@ public class GenericEvent<T> implements EventProxy<T> {
 		this.payloadType = payloadType;
 		this.payload = payload;
 		this.dataTime = time;
+	}
+
+	public static <T> EventProxy<T> asEventMessage(Object event) {
+		if (EventProxy.class.isInstance(event)) {
+			return (EventProxy<T>) event;
+		} else if (event instanceof EventProxy) {
+			EventProxy message = (EventProxy) event;
+			return new GenericEvent<>((T) message.getPayload());
+		}
+		return new GenericEvent<>((T) event);
 	}
 	
 	@Override

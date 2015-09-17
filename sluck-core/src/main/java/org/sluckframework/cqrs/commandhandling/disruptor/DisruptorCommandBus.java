@@ -1,28 +1,14 @@
 package org.sluckframework.cqrs.commandhandling.disruptor;
 
-import static java.lang.String.format;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.EventHandlerGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.common.exception.Assert;
 import org.sluckframework.common.serializer.Serializer;
 import org.sluckframework.common.thread.SluckThreadFactory;
-import org.sluckframework.cqrs.commandhandling.Command;
-import org.sluckframework.cqrs.commandhandling.CommandBus;
-import org.sluckframework.cqrs.commandhandling.CommandCallback;
-import org.sluckframework.cqrs.commandhandling.CommandDispatchInterceptor;
-import org.sluckframework.cqrs.commandhandling.CommandHandler;
-import org.sluckframework.cqrs.commandhandling.CommandHandlerInterceptor;
-import org.sluckframework.cqrs.commandhandling.CommandTargetResolver;
-import org.sluckframework.cqrs.commandhandling.NoHandlerForCommandException;
+import org.sluckframework.cqrs.commandhandling.*;
 import org.sluckframework.cqrs.commandhandling.interceptors.SerializationOptimizingInterceptor;
 import org.sluckframework.cqrs.eventhanding.EventBus;
 import org.sluckframework.cqrs.eventsourcing.AggregateFactory;
@@ -34,9 +20,11 @@ import org.sluckframework.domain.event.eventstore.AggregateEventStore;
 import org.sluckframework.domain.identifier.Identifier;
 import org.sluckframework.domain.repository.Repository;
 
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.dsl.EventHandlerGroup;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+
+import static java.lang.String.format;
 
 /**
  * 异步的commandBus实现。效率提高，分两步操作，第一步 commandhandler处理 command，then 保存 提交 聚合事件，顺序执行
@@ -303,6 +291,7 @@ public class DisruptorCommandBus implements CommandBus {
 
         @Override
         public void onSuccess(Object result) {
+            System.out.println("command process success");
         }
 
         @Override
