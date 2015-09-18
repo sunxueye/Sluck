@@ -13,7 +13,7 @@ import org.sluckframework.cqrs.eventhanding.scheduling.EventScheduler;
 import org.sluckframework.cqrs.eventhanding.scheduling.java.SimpleEventScheduler;
 import org.sluckframework.cqrs.saga.GenericSagaFactory;
 import org.sluckframework.cqrs.saga.SimpleResourceInjector;
-import org.sluckframework.cqrs.saga.annotation.AnnotatedSagaManager;
+import org.sluckframework.cqrs.saga.annotation.AsyncAnnotatedSagaManager;
 import org.sluckframework.cqrs.saga.repository.inmemory.InMemorySagaRepository;
 import org.sluckframework.cqrs.unitofwork.UnitOfWork;
 import org.sluckframework.domain.event.aggregate.AggregateEventStream;
@@ -93,11 +93,12 @@ public class RunSaga {
         sagaFactory.setResourceInjector(new SimpleResourceInjector(eventScheduler, commandGateway));
 
         // Sagas instances are managed and tracked by a SagaManager.
-        AnnotatedSagaManager sagaManager = new AnnotatedSagaManager(sagaRepository, sagaFactory, ToDoSaga.class);
+//        AnnotatedSagaManager sagaManager = new AnnotatedSagaManager(sagaRepository, sagaFactory, ToDoSaga.class);
 
         //test with asyn saga
-//        AsyncAnnotatedSagaManager sagaManager = new AsyncAnnotatedSagaManager(ToDoSaga.class);
-//        sagaManager.start();
+        AsyncAnnotatedSagaManager sagaManager = new AsyncAnnotatedSagaManager(ToDoSaga.class);
+        sagaManager.setSagaFactory(sagaFactory);
+        sagaManager.start();
 
         // and we need to subscribe the Saga Manager to the Event Bus
         eventBus.subscribe(sagaManager);

@@ -226,7 +226,7 @@ public final class AsyncSagaEventProcessor implements EventHandler<AsyncSagaProc
     private boolean persistProcessedSagas(boolean logExceptions) throws Exception {
         try {
             if (!processedSagas.isEmpty()) {
-                Set<String> committedSagas = new HashSet<String>();
+                Set<String> committedSagas = new HashSet<>();
                 ensureActiveUnitOfWork();
                 for (Saga saga : processedSagas.values()) {
                     if (newlyCreatedSagas.containsKey(saga.getSagaIdentifier())) {
