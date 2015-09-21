@@ -1,16 +1,18 @@
 package org.sluck.test.saga;
 
+import org.sluckframework.domain.identifier.DefaultIdentifier;
+
 public class ToDoItemCreatedEvent {
 
-    private final String todoId;
+    private final DefaultIdentifier todoId;
     private final String description;
 
-    public ToDoItemCreatedEvent(String todoId, String description) {
+    public ToDoItemCreatedEvent(DefaultIdentifier todoId, String description) {
         this.todoId = todoId;
         this.description = description;
     }
 
-    public String getTodoId() {
+    public DefaultIdentifier getTodoId() {
         return todoId;
     }
 

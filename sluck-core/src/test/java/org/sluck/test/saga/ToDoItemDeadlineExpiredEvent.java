@@ -2,15 +2,17 @@
 package org.sluck.test.saga;
 
 
+import org.sluckframework.domain.identifier.DefaultIdentifier;
+
 public class ToDoItemDeadlineExpiredEvent {
 
-    private final String todoId;
+    private final DefaultIdentifier todoId;
 
-    public ToDoItemDeadlineExpiredEvent(String todoId) {
+    public ToDoItemDeadlineExpiredEvent(DefaultIdentifier todoId) {
         this.todoId = todoId;
     }
 
-    public String getTodoId() {
+    public DefaultIdentifier getTodoId() {
         return todoId;
     }
 

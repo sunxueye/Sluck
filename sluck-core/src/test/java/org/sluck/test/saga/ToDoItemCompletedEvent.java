@@ -1,15 +1,17 @@
 
 package org.sluck.test.saga;
 
+import org.sluckframework.domain.identifier.DefaultIdentifier;
+
 public class ToDoItemCompletedEvent {
 
-    private final String todoId;
+    private final DefaultIdentifier todoId;
 
-    public ToDoItemCompletedEvent(String todoId) {
+    public ToDoItemCompletedEvent(DefaultIdentifier todoId) {
         this.todoId = todoId;
     }
 
-    public String getTodoId() {
+    public DefaultIdentifier getTodoId() {
         return todoId;
     }
 
