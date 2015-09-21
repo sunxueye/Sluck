@@ -23,7 +23,6 @@ import org.sluckframework.domain.identifier.Identifier;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-import static org.sluckframework.domain.event.aggregate.GenericEvent.asEventMessage;
 
 
 public class RunSaga {
@@ -108,10 +107,10 @@ public class RunSaga {
         // Let's pretend a few things are happening
 
         // We create 2 items
-        eventBus.publish(asEventMessage(new ToDoItemCreatedEvent("todo1", "Got something to do")));
-        eventBus.publish(asEventMessage(new ToDoItemCreatedEvent("todo2", "Got something else to do")));
-        // We mark the first completed, before the deadline expires. The Saga has a hard-coded deadline of 2 seconds
-        eventBus.publish(asEventMessage(new ToDoItemCompletedEvent("todo1")));
+//        eventBus.publish(asEventMessage(new ToDoItemCreatedEvent("todo1", "Got something to do")));
+//        eventBus.publish(asEventMessage(new ToDoItemCreatedEvent("todo2", "Got something else to do")));
+//        // We mark the first completed, before the deadline expires. The Saga has a hard-coded deadline of 2 seconds
+//        eventBus.publish(asEventMessage(new ToDoItemCompletedEvent("todo1")));
         // we wait 3 seconds. Enough time for the deadline to expire
         Thread.sleep(3000);
         // Just a System out to remind us that we should see something
