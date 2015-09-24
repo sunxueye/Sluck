@@ -12,6 +12,7 @@ import org.sluckframework.cqrs.eventsourcing.EventSourcingRepository;
 import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.eventstore.AggregateEventStore;
 import org.sluckframework.domain.identifier.Identifier;
+import org.sluckframework.implement.eventstore.jdbc.JdbcEventStore;
 
 /**
  * Author: sunxy
@@ -54,6 +55,9 @@ public class RunAnnotatedAggregate {
                 return null;
             }
         };
+
+
+        AggregateEventStore jdbcStore = new JdbcEventStore();
 
         // a Simple Event Bus will do
         EventBus eventBus = new SimpleEventBus();
