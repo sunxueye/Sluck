@@ -1,5 +1,7 @@
 package org.sluck.test.saga;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.sluckframework.cqrs.commandhandling.CommandBus;
 import org.sluckframework.cqrs.commandhandling.SimpleCommandBus;
 import org.sluckframework.cqrs.commandhandling.annotation.AggregateAnnotationCommandHandler;
@@ -13,6 +15,8 @@ import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.eventstore.AggregateEventStore;
 import org.sluckframework.domain.identifier.Identifier;
 import org.sluckframework.implement.eventstore.jdbc.JdbcEventStore;
+
+import javax.sql.DataSource;
 
 /**
  * Author: sunxy
@@ -30,7 +34,7 @@ public class RunAnnotatedAggregate {
         // we'll store Events on the FileSystem, in the "events" folder
 //        EventStore eventStore = new FileSystemEventStore(new SimpleEventFileResolver(new File("./events")));
 
-        AggregateEventStore eventStore = new AggregateEventStore() {
+        AggregateEventStore eventStore1 = new AggregateEventStore() {
 
             @Override
             public void appendEvents(String type, AggregateEventStream events) {
@@ -56,8 +60,7 @@ public class RunAnnotatedAggregate {
             }
         };
 
-
-        AggregateEventStore jdbcStore = new JdbcEventStore();
+        AggregateEventStore eventStore = new JdbcEventStore(getDataSource());
 
         // a Simple Event Bus will do
         EventBus eventBus = new SimpleEventBus();
@@ -75,5 +78,22 @@ public class RunAnnotatedAggregate {
 
         // and let's send some Commands on the CommandBus.
         CommandGenerator.sendCommands(commandGateway);
+    }
+
+    public static DataSource getDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setMaximumPoolSize(10);
+        config.setDataSourceClassName("oracle.jdbc.pool.OracleDataSource");
+//        config.setJdbcUrl("jdbc:oracle:thin:@169.254.177.142:1521:XE");
+        config.addDataSourceProperty("serverName", "169.254.177.142");
+        config.addDataSourceProperty("portNumber", "1521");
+        config.addDataSourceProperty("databaseName", "XE");
+        config.addDataSourceProperty("driverType", "thin");
+        config.setUsername("sun");
+        config.setPassword("sun");
+        config.setConnectionTestQuery("select sysdate from dual");
+
+
+        return new HikariDataSource(config);
     }
 }
