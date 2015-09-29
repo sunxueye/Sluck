@@ -15,7 +15,7 @@ public interface CommandHandler<T> {
     /**
      * 处理命令
      *
-     * @param Command The command to process.
+     * @param command The command to process.
      * @param unitOfWork     The UnitOfWork the command is processed in
      * @return The result of the command processing, if any.
      *
