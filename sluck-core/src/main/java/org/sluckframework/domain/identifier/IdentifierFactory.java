@@ -1,11 +1,11 @@
 package org.sluckframework.domain.identifier;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-import java.util.UUID;
-
+import com.eaio.uuid.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * 标识符工厂，用来生成标识符, 可以继承此工厂来实现自己的标识符，也可以使用默认的UUID instance来产生
@@ -29,13 +29,13 @@ public abstract class IdentifierFactory {
 			logger.debug("Looking for IdentifierFactory implementation using the IdentifierFactory class loader.");
 			factory = locateFactories(IdentifierFactory.class.getClassLoader(), "IdentifierFactory");
 		}
-		// 如果没有实现，使用默认的UUID来生成标识
+		// 如果没有实现，使用默认eaio的UUID来生成标识,效率是普通的uuid数倍
 		if (factory == null) {
 			factory = new IdentifierFactory() {
 				@SuppressWarnings("unchecked")
 				@Override
 				public String generateIdentifier() {
-					return UUID.randomUUID().toString();
+					return new UUID().toString();
 				}
 			};
 			logger.debug("Using default UUID-based IdentifierFactory");
