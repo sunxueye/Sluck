@@ -1,16 +1,16 @@
 package org.sluckframework.implement.eventstore.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.sluckframework.common.serializer.SerializedAggregateEventData;
 import org.sluckframework.common.serializer.SimpleSerializedAggregateEventData;
 import org.sluckframework.domain.identifier.DefaultIdentifier;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * 通用的 sqlSchema 实现
@@ -117,7 +117,6 @@ public class GenericEventSqlSchema<T> implements EventSqlSchema<T> {
      * @param eventType           The type identifier of the serialized event
      * @param eventRevision       The revision of the serialized event
      * @param eventPayload        The serialized payload of the Event
-     * @param eventMetaData       The serialized meta data of the event
      * @param aggregateType       The type identifier of the aggregate the event belongs to
      * @return a prepared statement that allows inserting a domain event entry when executed
      * @throws SQLException when an exception occurs creating the PreparedStatement
@@ -220,7 +219,7 @@ public class GenericEventSqlSchema<T> implements EventSqlSchema<T> {
     public PreparedStatement sql_createSnapshotEventEntryTable(Connection connection) throws SQLException {
         final String sql = "    create table " + schemaConfiguration.snapshotEntryTable() + " (\n" +
                 "        aggregateIdentifier varchar(255) not null,\n" +
-                "        sequenceNumber bigint not null,\n" +
+                "        sequenceNumber number not null,\n" +
                 "        type varchar(255) not null,\n" +
                 "        eventIdentifier varchar(255) not null,\n" +
                 "        payload blob not null,\n" +
@@ -236,7 +235,7 @@ public class GenericEventSqlSchema<T> implements EventSqlSchema<T> {
     public PreparedStatement sql_createDomainEventEntryTable(Connection connection) throws SQLException {
         final String sql = "create table " + schemaConfiguration.domainEventEntryTable() + " (\n" +
                 "        aggregateIdentifier varchar(255) not null,\n" +
-                "        sequenceNumber bigint not null,\n" +
+                "        sequenceNumber number not null,\n" +
                 "        type varchar(255) not null,\n" +
                 "        eventIdentifier varchar(255) not null,\n" +
                 "        payload blob not null,\n" +
