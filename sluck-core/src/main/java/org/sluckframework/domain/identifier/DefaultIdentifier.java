@@ -53,4 +53,8 @@ public class DefaultIdentifier implements Identifier<String> {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return identifier;
+	}
 }
