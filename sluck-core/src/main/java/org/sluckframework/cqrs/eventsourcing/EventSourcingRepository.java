@@ -1,30 +1,24 @@
 package org.sluckframework.cqrs.eventsourcing;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.sluckframework.common.exception.Assert;
 import org.sluckframework.common.util.IOUtils;
-import org.sluckframework.domain.identifier.Identifier;
-import org.sluckframework.domain.repository.AggregateNotFoundException;
-import org.sluckframework.domain.repository.lock.LockManager;
-import org.sluckframework.domain.repository.lock.LockingRepository;
+import org.sluckframework.cqrs.unitofwork.CurrentUnitOfWork;
+import org.sluckframework.cqrs.unitofwork.UnitOfWork;
+import org.sluckframework.cqrs.unitofwork.UnitOfWorkListenerAdapter;
 import org.sluckframework.domain.aggregate.AggregateRoot;
 import org.sluckframework.domain.event.EventProxy;
 import org.sluckframework.domain.event.aggregate.AggregateEvent;
 import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.eventstore.AggregateEventStore;
 import org.sluckframework.domain.event.eventstore.EventStreamNotFoundException;
-import org.sluckframework.cqrs.eventsourcing.ConflictResolver;
-import org.sluckframework.cqrs.unitofwork.CurrentUnitOfWork;
-import org.sluckframework.cqrs.unitofwork.UnitOfWork;
-import org.sluckframework.cqrs.unitofwork.UnitOfWorkListenerAdapter;
+import org.sluckframework.domain.identifier.Identifier;
+import org.sluckframework.domain.repository.AggregateNotFoundException;
+import org.sluckframework.domain.repository.lock.LockManager;
+import org.sluckframework.domain.repository.lock.LockingRepository;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.*;
 
 
 /**
@@ -50,7 +44,7 @@ public class EventSourcingRepository<T extends EventSourcedAggregateRoot<ID>, ID
      * @param AggregateEventStore    The event store that holds the event streams for this repository
      */
     public EventSourcingRepository(final Class<T> aggregateType, AggregateEventStore AggregateEventStore) {
-        this(new GenericAggregateFactory<T>(aggregateType), AggregateEventStore);
+        this(new GenericAggregateFactory<>(aggregateType), AggregateEventStore);
     }
 
     /**
