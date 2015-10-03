@@ -1,14 +1,15 @@
 package org.sluckframework.common.serializer;
 
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * 使用多个 coverterFactory来组合链 去 coverter 
- * 此实现会是哟个ServiceLoader 机制来 加载 /META-INF/services/org.sluckframework.serializer.ContentTypeConverter
+ * 此实现会是哟个ServiceLoader 机制来 加载 /META-INF/services/org.sluckframework.common.serializer.ContentTypeConverter
  * 文件读取converter,文件中定义的class 必须是全限定名称
  * 
  * @author sunxy
@@ -19,10 +20,10 @@ import org.slf4j.LoggerFactory;
 public class ChainingConverterFactory implements ConverterFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(ChainingConverterFactory.class);
-    private final List<ContentTypeConverter<?, ?>> converters = new CopyOnWriteArrayList<ContentTypeConverter<?, ?>>();
+    private final List<ContentTypeConverter<?, ?>> converters = new CopyOnWriteArrayList<>();
 
     /**
-     * 初始化，会加载/META-INF/services/org.sluckframework.serializer.ContentTypeConverter
+     * 初始化，会加载/META-INF/services/org.sluckframework.common.serializer.ContentTypeConverter
      */
 	public ChainingConverterFactory() {
         ServiceLoader<ContentTypeConverter> converterLoader = ServiceLoader.load(ContentTypeConverter.class);

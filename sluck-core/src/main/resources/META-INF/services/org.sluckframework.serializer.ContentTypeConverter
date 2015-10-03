@@ -1,5 +1,0 @@
-org.sluckframework.common.serializer.converters.ByteArrayToInputStreamConverter
-org.sluckframework.common.serializer.converters.BlobToInputStreamConverter
-org.sluckframework.common.serializer.converters.InputStreamToByteArrayConverter
-org.sluckframework.common.serializer.converters.ByteArrayToStringConverter
-org.sluckframework.common.serializer.converters.StringToByteArrayConverter

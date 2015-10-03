@@ -1,15 +1,11 @@
 package org.sluckframework.common.serializer;
 
-import static java.lang.String.format;
+import org.sluckframework.common.exception.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.sluckframework.common.exception.Assert;
+import static java.lang.String.format;
 
 /**
  * 链式的converter转换source to target
@@ -42,7 +38,7 @@ public class ChainedConverter<S, T> implements ContentTypeConverter<S, T> {
             throw new CannotConvertBetweenTypesException(format("Cannot build a converter to convert from %s to %s",
                                                                 sourceType.getName(), targetType.getName()));
         }
-        return new ChainedConverter<S, T>(route.asList());
+        return new ChainedConverter<>(route.asList());
     }
 
     /**
@@ -71,7 +67,7 @@ public class ChainedConverter<S, T> implements ContentTypeConverter<S, T> {
     public ChainedConverter(List<ContentTypeConverter<S, T>> delegates) {
         Assert.isTrue(delegates != null && !delegates.isEmpty(), "The given delegates may not be null or empty");
         Assert.isTrue(isContinuous(delegates), "The given delegates must form a continuous chain");
-        this.delegates = new ArrayList<ContentTypeConverter<S, T>>(delegates);
+        this.delegates = new ArrayList<>(delegates);
         target = this.delegates.get(this.delegates.size() - 1).targetType();
         source = delegates.get(0).expectedSourceType();
     }
@@ -122,10 +118,10 @@ public class ChainedConverter<S, T> implements ContentTypeConverter<S, T> {
     private static final class RouteCalculator {
 
         private final Collection<ContentTypeConverter<?, ?>> candidates;
-        private final List<Route> routes = new LinkedList<Route>();
+        private final List<Route> routes = new LinkedList<>();
 
         private RouteCalculator(Collection<ContentTypeConverter<?, ?>> candidates) {
-            this.candidates = new CopyOnWriteArrayList<ContentTypeConverter<?, ?>>(candidates);
+            this.candidates = new CopyOnWriteArrayList<>(candidates);
         }
 
         private Route calculateRoute(Class<?> sourceType, Class<?> targetType) {
