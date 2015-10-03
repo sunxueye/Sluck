@@ -28,7 +28,7 @@ public class SerializationAwareAggregateEvent<T, AID extends Identifier<?>> exte
         if (message instanceof SerializationAware) {
             return message;
         }
-        return new SerializationAwareAggregateEvent<T, AID>(message);
+        return new SerializationAwareAggregateEvent<>(message);
     }
 
     protected SerializationAwareAggregateEvent(AggregateEvent<T, AID> message) {

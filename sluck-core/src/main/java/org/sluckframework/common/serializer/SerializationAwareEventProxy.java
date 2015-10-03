@@ -26,7 +26,7 @@ public class SerializationAwareEventProxy<T> implements SerializationAware, Even
         if (message instanceof SerializationAware) {
             return message;
         }
-        return new SerializationAwareEventProxy<T>(message);
+        return new SerializationAwareEventProxy<>(message);
     }
 
     /**

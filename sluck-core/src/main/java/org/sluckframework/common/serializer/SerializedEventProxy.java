@@ -24,7 +24,7 @@ public class SerializedEventProxy<T> implements EventProxy<T>, SerializationAwar
     public SerializedEventProxy(Object eventIdentifier, DateTime timestamp,
     		SerializedObject<?> serializedPayload,Serializer serializer) {
         this.identifier = eventIdentifier;
-        this.serializedPayload = new LazyDeserializingObject<T>(serializedPayload, serializer);
+        this.serializedPayload = new LazyDeserializingObject<>(serializedPayload, serializer);
         this.timestamp = timestamp;
     }
     
@@ -64,7 +64,7 @@ public class SerializedEventProxy<T> implements EventProxy<T>, SerializationAwar
     }
 
     protected Object writeReplace() {
-        return new GenericEvent<T>(getIdentifier(), getPayload(), getPayloadType(), occurredOn());
+        return new GenericEvent<>(getIdentifier(), getPayload(), getPayloadType(), occurredOn());
     }
 
 }

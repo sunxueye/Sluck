@@ -47,7 +47,7 @@ public interface Serializer {
     /**
      * 根据class,创建相应的SerializedType
      *
-     * @param target Class
+     * @param type Class
      * @return The type identifier of the object
      */
     SerializedType typeForClass(Class<?> type);
