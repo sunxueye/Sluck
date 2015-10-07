@@ -23,7 +23,7 @@ public class SerializedAggregateEvent <T> implements AggregateEvent, Serializati
     private final SerializedEventProxy<T> eventMessage;
 
     public SerializedAggregateEvent(SerializedAggregateEventData domainEventData, Serializer serializer) {
-        eventMessage = new SerializedEventProxy<T>(
+        eventMessage = new SerializedEventProxy<>(
                 domainEventData.getEventIdentifier(), domainEventData.getTimestamp(),
                 domainEventData.getPayload(), serializer);
         aggregateIdentifier = domainEventData.getAggregateIdentifier();
