@@ -1,17 +1,13 @@
 package org.sluckframework.cqrs.upcasting;
 
-import static java.util.Collections.singletonList;
+import org.sluckframework.common.exception.Assert;
+import org.sluckframework.common.serializer.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.sluckframework.common.exception.Assert;
-import org.sluckframework.common.serializer.ChainingConverterFactory;
-import org.sluckframework.common.serializer.ContentTypeConverter;
-import org.sluckframework.common.serializer.ConverterFactory;
-import org.sluckframework.common.serializer.SerializedObject;
-import org.sluckframework.common.serializer.SerializedType;
+import static java.util.Collections.singletonList;
 
 /**
  * upcasterChain的抽象实现，用于迭代 convert content type
@@ -96,7 +92,7 @@ public abstract class AbstractUpcasterChain implements UpcasterChain{
         if (!upcasterIterator.hasNext()) {
             return serializedObjects;
         }
-        List<SerializedObject> upcastObjects = new ArrayList<SerializedObject>();
+        List<SerializedObject> upcastObjects = new ArrayList<>();
         Upcaster<?> currentUpcaster = upcasterIterator.next();
         for (SerializedObject serializedObject : serializedObjects) {
             if (currentUpcaster.canUpcast(serializedObject.getType())) {
