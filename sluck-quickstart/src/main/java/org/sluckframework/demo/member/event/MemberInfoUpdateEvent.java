@@ -12,6 +12,9 @@ public class MemberInfoUpdateEvent {
     private String newName;
     private String newIdCard;
 
+    private MemberInfoUpdateEvent() {
+    }
+
     public MemberInfoUpdateEvent(String newName, String newIdCard) {
         this.newName = newName;
         this.newIdCard = newIdCard;

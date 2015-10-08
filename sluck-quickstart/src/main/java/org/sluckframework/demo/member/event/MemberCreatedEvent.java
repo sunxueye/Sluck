@@ -12,6 +12,9 @@ public class MemberCreatedEvent {
     private String name;
     private String idCard;
 
+    private MemberCreatedEvent() {
+    }
+
     public MemberCreatedEvent(String name, String idCard) {
         this.name = name;
         this.idCard = idCard;
