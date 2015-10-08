@@ -1,13 +1,13 @@
 package org.sluckframework.domain.event.aggregate;
 
+import org.sluckframework.common.exception.Assert;
+import org.sluckframework.domain.aggregate.EventRegistrationCallback;
+import org.sluckframework.domain.identifier.Identifier;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.sluckframework.common.exception.Assert;
-import org.sluckframework.domain.aggregate.EventRegistrationCallback;
-import org.sluckframework.domain.identifier.Identifier;
 
 /**
  * 事件容器，用于保存 聚合产生的 事件
@@ -45,7 +45,7 @@ public class AggregateEventContainer implements Serializable {
 
 	/**
 	 * 增加事件到容器中，需要注意事件的顺序
-	 * @param event the event to add to this container
+	 * @param aggregateEvent the event to add to this container
 	 * @return the AggregateEvent added to the container
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
