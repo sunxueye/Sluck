@@ -28,7 +28,7 @@ public class Member extends AbstractAnnotatedAggregateRoot<MemberID> {
         apply(new MemberCreatedEvent(createdMemberCommand.getName(), createdMemberCommand.getIdCard()));
     }
 
-    @CommandHandler
+    @EventSourcingHandler
     public void updateMemberInfo(MemberInfoUpdateEvent updateInfoEvent) {
         this.name = updateInfoEvent.getNewName();
         this.idCard = updateInfoEvent.getNewIdCard();
