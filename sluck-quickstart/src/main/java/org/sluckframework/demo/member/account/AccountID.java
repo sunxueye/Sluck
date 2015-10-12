@@ -8,8 +8,10 @@ import org.sluckframework.domain.identifier.DefaultIdentifier;
  * Since: 1.0
  */
 public class AccountID extends DefaultIdentifier{
-    @Override
-    public String toString() {
-        return "account identifier, id :" + super.toString();
+    public AccountID() {
+    }
+
+    public AccountID(String identifier) {
+        super(identifier);
     }
 }

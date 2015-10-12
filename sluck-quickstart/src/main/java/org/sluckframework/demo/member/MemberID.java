@@ -10,8 +10,12 @@ import org.sluckframework.domain.identifier.DefaultIdentifier;
  * Since: 1.0
  */
 public class MemberID extends DefaultIdentifier {
-    @Override
-    public String toString() {
-        return "member identifier, id :" + super.toString();
+
+    public MemberID(String identifier) {
+        super(identifier);
     }
+
+    public MemberID() {
+    }
+
 }
