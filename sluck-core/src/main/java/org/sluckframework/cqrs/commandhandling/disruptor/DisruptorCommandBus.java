@@ -211,7 +211,7 @@ public class DisruptorCommandBus implements CommandBus {
         try {
             CommandHandlingEntry event = ringBuffer.get(sequence);
             event.reset(command, commandHandler, invokerSegment, publisherSegment,
-                        serializerSegment, new BlacklistDetectingCallback<R>(callback,
+                        serializerSegment, new BlacklistDetectingCallback<>(callback,
                                                                              command,
                                                                              disruptor.getRingBuffer(),
                                                                              this,

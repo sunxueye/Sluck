@@ -88,7 +88,7 @@ public class MethodMessageHandlerInspector {
         this.parameterResolver = parameterResolverFactory;
         this.targetType = targetType;
         Iterable<Method> methods = methodsOf(targetType);
-        NavigableSet<MethodMessageHandler> uniqueHandlers = new TreeSet<MethodMessageHandler>();
+        NavigableSet<MethodMessageHandler> uniqueHandlers = new TreeSet<>();
         for (Method method : methods) {
             if (handlerDefinition.isMessageHandler(method)) {
                 final Class<?> explicitPayloadType = handlerDefinition.resolvePayloadFor(method);
