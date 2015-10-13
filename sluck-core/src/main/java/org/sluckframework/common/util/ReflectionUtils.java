@@ -1,40 +1,24 @@
 package org.sluckframework.common.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sluckframework.common.exception.Assert;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-import java.lang.reflect.Type;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sluckframework.common.exception.Assert;
 
 /**
  * class 反射工具
@@ -219,8 +203,6 @@ public class ReflectionUtils {
 	 * 
 	 * @param packageName
 	 *            包名称（例如：com.shengpay)
-	 * @param fileType
-	 *            类列表
 	 * @return
 	 */
 	public static Set<Class<?>> getClassSetByPackageName(String packageName) {
@@ -243,8 +225,6 @@ public class ReflectionUtils {
 	 * 
 	 * @param packageName
 	 *            包名称（例如：com.shengpay)
-	 * @param fileType
-	 *            类列表
 	 * @return
 	 */
 	public static Set<Class<?>> getClassSetByPackageName(String packageName, Class<? extends Annotation> atn) {
@@ -345,8 +325,7 @@ public class ReflectionUtils {
 	 * @param packageName
 	 * @param packagePath
 	 * @param classSet
-	 * @param recursive
-	 * @param classes
+	 * @param fileType
 	 */
 	public static void findAndAddClassesInPackageByFile(String packageName, String packagePath, Set<String> classSet, final String fileType) {
 		// 获取此包的目录 建立一个File
@@ -441,7 +420,7 @@ public class ReflectionUtils {
 	/**
 	 * 获取方法签名信息(例如:test(java.lang.String,java.lang.Long))
 	 * 
-	 * @param mi
+	 * @param method
 	 * @return
 	 */
 	public static String getMethodSign(Method method) {
