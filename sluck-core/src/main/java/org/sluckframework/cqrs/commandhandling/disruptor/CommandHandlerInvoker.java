@@ -1,10 +1,7 @@
 package org.sluckframework.cqrs.commandhandling.disruptor;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.LifecycleAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.cache.Cache;
@@ -22,8 +19,10 @@ import org.sluckframework.domain.repository.AggregateNotFoundException;
 import org.sluckframework.domain.repository.ConflictingAggregateVersionException;
 import org.sluckframework.domain.repository.Repository;
 
-import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.LifecycleAware;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * disputor的 eventHandler 实现
@@ -36,10 +35,10 @@ import com.lmax.disruptor.LifecycleAware;
 public class CommandHandlerInvoker implements EventHandler<CommandHandlingEntry>, LifecycleAware {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandHandlerInvoker.class);
-    private static final ThreadLocal<CommandHandlerInvoker> CURRENT_INVOKER = new ThreadLocal<CommandHandlerInvoker>();
+    private static final ThreadLocal<CommandHandlerInvoker> CURRENT_INVOKER = new ThreadLocal<>();
     private static final Object PLACEHOLDER_VALUE = new Object();
 
-    private final ConcurrentMap<String, DisruptorRepository> repositories = new ConcurrentHashMap<String, DisruptorRepository>();
+    private final ConcurrentMap<String, DisruptorRepository> repositories = new ConcurrentHashMap<>();
     private final Cache cache;
     private final int segmentId;
     private final AggregateEventStore AggregateEventStore;
