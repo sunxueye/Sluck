@@ -1,6 +1,13 @@
 package org.sluckframework.cqrs.eventsourcing.annotation;
 
-import static java.lang.String.format;
+import org.sluckframework.common.annotation.HandlerDefinition;
+import org.sluckframework.common.annotation.MessageHandlerInvoker;
+import org.sluckframework.common.annotation.ParameterResolverFactory;
+import org.sluckframework.common.util.ReflectionUtils;
+import org.sluckframework.cqrs.eventhanding.annotation.EventHandler;
+import org.sluckframework.cqrs.eventsourcing.EventSourcedEntity;
+import org.sluckframework.cqrs.eventsourcing.IncompatibleAggregateException;
+import org.sluckframework.domain.identifier.Identifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -12,18 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.sluckframework.common.annotation.HandlerDefinition;
-import org.sluckframework.common.annotation.MessageHandlerInvoker;
-import org.sluckframework.common.annotation.ParameterResolverFactory;
-import org.sluckframework.common.util.ReflectionUtils;
-import org.sluckframework.cqrs.eventhanding.annotation.EventHandler;
-import org.sluckframework.cqrs.eventsourcing.EventSourcedEntity;
-import org.sluckframework.cqrs.eventsourcing.IncompatibleAggregateException;
-import org.sluckframework.domain.identifier.Identifier;
-
+import static java.lang.String.format;
 import static org.sluckframework.common.util.CollectionUtils.filterByType;
-import static org.sluckframework.common.util.ReflectionUtils.fieldsOf;
 import static org.sluckframework.common.util.ReflectionUtils.ensureAccessible;
+import static org.sluckframework.common.util.ReflectionUtils.fieldsOf;
 /**
  * 聚合的 注解 解析
  * 
@@ -57,7 +56,7 @@ public class AggregateAnnotationInspector {
     }
 
     private AggregateAnnotationInspector(Class<?> entityType, ParameterResolverFactory parameterResolverFactory) {
-        List<Field> annotatedFields = new ArrayList<Field>();
+        List<Field> annotatedFields = new ArrayList<>();
         for (Field field : ReflectionUtils.fieldsOf(entityType)) {
             if (field.isAnnotationPresent(EventSourcedMember.class)) {
                 annotatedFields.add(field);
