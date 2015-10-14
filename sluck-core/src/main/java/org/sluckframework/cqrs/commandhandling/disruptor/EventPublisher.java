@@ -1,19 +1,8 @@
 package org.sluckframework.cqrs.commandhandling.disruptor;
 
-import static java.lang.String.format;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.concurrent.Executor;
-
+import com.lmax.disruptor.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.lmax.disruptor.EventHandler;
-
 import org.sluckframework.cqrs.commandhandling.Command;
 import org.sluckframework.cqrs.commandhandling.CommandCallback;
 import org.sluckframework.cqrs.commandhandling.RollbackConfiguration;
@@ -26,6 +15,11 @@ import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.eventstore.AggregateEventStore;
 import org.sluckframework.domain.identifier.Identifier;
 import org.sluckframework.domain.repository.AggregateNotFoundException;
+
+import java.util.*;
+import java.util.concurrent.Executor;
+
+import static java.lang.String.format;
 
 /**
  * 事件发布处理器，用于存储和发布命令产生的事件
@@ -44,8 +38,8 @@ public class EventPublisher implements EventHandler<CommandHandlingEntry> {
     private final Executor executor;
     private final RollbackConfiguration rollbackConfiguration;
     private final int segmentId;
-    private final Set<Object> blackListedAggregates = new HashSet<Object>();
-	private final Map<Command, Object> failedCreateCommands = new WeakHashMap<Command, Object>();
+    private final Set<Object> blackListedAggregates = new HashSet<>();
+	private final Map<Command, Object> failedCreateCommands = new WeakHashMap<>();
     private final TransactionManager transactionManager;
 
     /**

@@ -1,25 +1,17 @@
 package org.sluckframework.cqrs.commandhandling.disruptor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.sluckframework.cqrs.eventhanding.EventBus;
 import org.sluckframework.cqrs.eventsourcing.EventSourcedAggregateRoot;
 import org.sluckframework.cqrs.eventsourcing.EventStreamDecorator;
-import org.sluckframework.cqrs.unitofwork.CurrentUnitOfWork;
-import org.sluckframework.cqrs.unitofwork.SaveAggregateCallback;
-import org.sluckframework.cqrs.unitofwork.UnitOfWork;
-import org.sluckframework.cqrs.unitofwork.UnitOfWorkListener;
-import org.sluckframework.cqrs.unitofwork.UnitOfWorkListenerCollection;
+import org.sluckframework.cqrs.unitofwork.*;
 import org.sluckframework.domain.aggregate.AggregateRoot;
 import org.sluckframework.domain.aggregate.EventRegistrationCallback;
 import org.sluckframework.domain.event.EventProxy;
 import org.sluckframework.domain.event.aggregate.AggregateEvent;
 import org.sluckframework.domain.event.aggregate.AggregateEventStream;
 import org.sluckframework.domain.event.aggregate.SimpleAggregateEventStream;
+
+import java.util.*;
 
 /**
  * disruptor的 uow,因为使用 actor 模型， 所以  不需要加锁 使用 仓储的时候
@@ -33,11 +25,11 @@ public class DisruptorUnitOfWork implements UnitOfWork, EventRegistrationCallbac
 
     private static final AggregateEventStream EMPTY_DOMAIN_EVENT_STREAM = new SimpleAggregateEventStream();
     private AggregateEventStream eventsToStore = EMPTY_DOMAIN_EVENT_STREAM;
-	private final List<EventProxy> eventsToPublish = new ArrayList<EventProxy>();
+	private final List<EventProxy> eventsToPublish = new ArrayList<>();
     private final UnitOfWorkListenerCollection listeners = new UnitOfWorkListenerCollection();
     private final boolean transactional;
-    private final Map<String, Object> resources = new HashMap<String, Object>();
-    private final Map<String, Object> inheritedResources = new HashMap<String, Object>();
+    private final Map<String, Object> resources = new HashMap<>();
+    private final Map<String, Object> inheritedResources = new HashMap<>();
     private boolean committed;
     private Throwable rollbackReason;
     private EventSourcedAggregateRoot aggregate;
