@@ -63,8 +63,7 @@ public abstract class LockingRepository<T extends AggregateRoot<ID>, ID extends 
     /**
      * {@inheritDoc}
      *
-     * @throws AggregateNotFoundException if aggregate with given id cannot be found
-     * @throws RuntimeException           any exception thrown by implementing classes
+     * @throws RuntimeException   any exception thrown by implementing classes
      */
     @Override
     public T load(ID aggregateIdentifier, Long expectedVersion) {

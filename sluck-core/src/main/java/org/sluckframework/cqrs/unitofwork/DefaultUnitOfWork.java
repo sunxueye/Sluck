@@ -1,13 +1,5 @@
 package org.sluckframework.cqrs.unitofwork;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.cqrs.eventhanding.EventBus;
@@ -15,6 +7,8 @@ import org.sluckframework.domain.aggregate.AggregateRoot;
 import org.sluckframework.domain.aggregate.EventRegistrationCallback;
 import org.sluckframework.domain.event.EventProxy;
 import org.sluckframework.domain.event.aggregate.AggregateEvent;
+
+import java.util.*;
 
 /**
  * 默认的 uow 实现，只有在uow 提交的 时候 聚合 才真正的被保存， 聚合事件真正被发布
@@ -29,7 +23,7 @@ public class DefaultUnitOfWork extends NestableUnitOfWork {
 
     
 	private final Map<AggregateRoot, AggregateAndSaveCallback> registeredAggregates =
-            new LinkedHashMap<AggregateRoot, AggregateAndSaveCallback>();
+            new LinkedHashMap<>();
     private final Map<EventBus, List<EventProxy<?>>> eventsToPublish = new HashMap<EventBus, List<EventProxy<?>>>();
     private final UnitOfWorkListenerCollection listeners = new UnitOfWorkListenerCollection();
     private Status dispatcherStatus = Status.READY;
