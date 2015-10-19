@@ -27,7 +27,7 @@ public class SagaMethodMessageHandlerInspector<T extends AbstractAnnotatedSaga> 
 
     private static final Logger logger = LoggerFactory.getLogger(SagaMethodMessageHandlerInspector.class);
 
-    private static final ConcurrentMap<Class<?>, SagaMethodMessageHandlerInspector> INSPECTORS = new ConcurrentHashMap<Class<?>, SagaMethodMessageHandlerInspector>();
+    private static final ConcurrentMap<Class<?>, SagaMethodMessageHandlerInspector> INSPECTORS = new ConcurrentHashMap<>();
 
     private final Set<SagaMethodMessageHandler> handlers = new TreeSet<>();
     private final Class<T> sagaType;

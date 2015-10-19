@@ -1,14 +1,5 @@
 package org.sluckframework.cqrs.commandhandling;
 
-import static java.lang.String.format;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.cqrs.commandhandling.callback.LoggingCallback;
@@ -17,6 +8,15 @@ import org.sluckframework.cqrs.unitofwork.TransactionManager;
 import org.sluckframework.cqrs.unitofwork.UnitOfWork;
 import org.sluckframework.cqrs.unitofwork.UnitOfWorkFactory;
 import org.sluckframework.monitoring.MonitorRegistry;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import static java.lang.String.format;
 
 /**
  * 命令总线的简单实现，同步等待命令处理完毕后返回
@@ -30,7 +30,7 @@ public class SimpleCommandBus implements CommandBus {
     private static final Logger logger = LoggerFactory.getLogger(SimpleCommandBus.class);
 
     private final ConcurrentMap<String, CommandHandler<?>> subscriptions =
-            new ConcurrentHashMap<String, CommandHandler<?>>();
+            new ConcurrentHashMap<>();
     private final SimpleCommandBusStatistics statistics = new SimpleCommandBusStatistics();
     private volatile Iterable<? extends CommandHandlerInterceptor> handlerInterceptors = Collections.emptyList();
     private volatile Iterable<? extends CommandDispatchInterceptor> dispatchInterceptors = Collections.emptyList();

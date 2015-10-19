@@ -40,7 +40,7 @@ public class SimpleResourceInjector implements ResourceInjector {
      * @param resources The resources to inject
      */
     public SimpleResourceInjector(Collection<?> resources) {
-        this.resources = new ArrayList<Object>(resources);
+        this.resources = new ArrayList<>(resources);
     }
 
     @Override
