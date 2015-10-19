@@ -29,7 +29,7 @@ public abstract class AbstractSagaManager implements SagaManager {
     private final SagaFactory sagaFactory;
     private final Class<? extends Saga>[] sagaTypes;
     private final IdentifierBasedLock lock = new IdentifierBasedLock();
-    private final Map<String, Saga> sagasInCreation = new ConcurrentHashMap<String, Saga>();
+    private final Map<String, Saga> sagasInCreation = new ConcurrentHashMap<>();
     private volatile boolean suppressExceptions = true;
     private volatile boolean synchronizeSagaAccess = true;
 
