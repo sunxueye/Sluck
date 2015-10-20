@@ -82,7 +82,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     public synchronized void start() {
         if (disruptor == null) {
             sagaManagerStatus.setStatus(true);
-            disruptor = new Disruptor<AsyncSagaProcessingEvent>(new AsyncSagaProcessingEvent.Factory(),
+            disruptor = new Disruptor<>(new AsyncSagaProcessingEvent.Factory(),
                     bufferSize,
                     new ValidatingExecutor(executor, startTimeout),
                     ProducerType.MULTI,
@@ -352,7 +352,7 @@ public class AsyncAnnotatedSagaManager implements SagaManager, EventProcessingMo
     private static class MonitorNotifier implements EventHandler<AsyncSagaProcessingEvent> {
 
         private final EventProcessingMonitor monitor;
-        private final List<EventProxy<?>> processedMessages = new ArrayList<EventProxy<?>>();
+        private final List<EventProxy<?>> processedMessages = new ArrayList<>();
 
         public MonitorNotifier(EventProcessingMonitor monitor) {
             this.monitor = monitor;

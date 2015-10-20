@@ -21,13 +21,13 @@ import java.util.Set;
 public class AsyncSagaProcessingEvent {
 
     private EventProxy<?> publishedEvent;
-    private final List<SagaMethodMessageHandler> handlers = new ArrayList<SagaMethodMessageHandler>();
+    private final List<SagaMethodMessageHandler> handlers = new ArrayList<>();
     private Class<? extends AbstractAnnotatedSaga> sagaType;
     private AbstractAnnotatedSaga newSaga;
     private final AsyncSagaCreationElector elector = new AsyncSagaCreationElector();
     private SagaMethodMessageHandler creationHandler;
     private AssociationValue initialAssociationValue;
-    private final Set<AssociationValue> associationValues = new HashSet<AssociationValue>();
+    private final Set<AssociationValue> associationValues = new HashSet<>();
 
     /**
      * 返回在 eventBus 上发布的事件,这个事件将触发相应的saga
