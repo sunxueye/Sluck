@@ -21,7 +21,7 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
 
     private static final long serialVersionUID = 3385024168304711298L;
 
-    private final AssociationValues associationValues = new AssociationValuesImpl();
+    private final AssociationValuesImpl associationValues = new AssociationValuesImpl();
     private final String identifier;
     private transient volatile SagaMethodMessageHandlerInspector<? extends AbstractAnnotatedSaga> inspector;
     private volatile boolean isActive = true;
