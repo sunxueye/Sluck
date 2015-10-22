@@ -91,6 +91,7 @@ public final class AsyncSagaEventProcessor implements EventHandler<AsyncSagaProc
 
     @Override
     public void onEvent(AsyncSagaProcessingEvent entry, long sequence, boolean endOfBatch) throws Exception {
+        System.out.println("entry = [" + entry + "], sequence = [" + sequence + "], endOfBatch = [" + endOfBatch + "]");
         doProcessEvent(entry, sequence, endOfBatch);
     }
 
