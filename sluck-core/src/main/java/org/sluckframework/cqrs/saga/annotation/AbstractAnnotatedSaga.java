@@ -21,10 +21,10 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
 
     private static final long serialVersionUID = 3385024168304711298L;
 
-    private final AssociationValuesImpl associationValues = new AssociationValuesImpl();
-    private final String identifier;
+    private AssociationValuesImpl associationValues = new AssociationValuesImpl();
+    private final String sagaIdentifier;
     private transient volatile SagaMethodMessageHandlerInspector<? extends AbstractAnnotatedSaga> inspector;
-    private volatile boolean isActive = true;
+    private volatile boolean active = true;
     private transient ParameterResolverFactory parameterResolverFactory;
 
     /**
@@ -40,13 +40,13 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
      * @param identifier the identifier to initialize the saga with.
      */
     protected AbstractAnnotatedSaga(String identifier) {
-        this.identifier = identifier;
+        this.sagaIdentifier = identifier;
         associationValues.add(new AssociationValue("sagaIdentifier", identifier));
     }
 
     @Override
     public String getSagaIdentifier() {
-        return identifier;
+        return sagaIdentifier;
     }
 
     @Override
@@ -56,7 +56,7 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
 
     @Override
     public final void handle(EventProxy<?> event) {
-        if (isActive) {
+        if (active) {
             ensureInspectorInitialized();
 
             SagaMethodMessageHandler handler = inspector.findHandlerMethod(this, event);
@@ -87,14 +87,14 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
 
     @Override
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     /**
      * 标示生命周期的结束
      */
     protected void end() {
-        isActive = false;
+        active = false;
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
      *
      * @param property The value to associate this saga with.
      */
-    protected void associateWith(AssociationValue property) {
+    public void associateWith(AssociationValue property) {
         associationValues.add(property);
     }
 
