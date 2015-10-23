@@ -15,8 +15,10 @@ public class AssociationValue implements Serializable {
 
     private static final long serialVersionUID = 3573690125021875389L;
 
-    private final String propertyKey;
-    private final String propertyValue;
+    private String key;
+    private String value;
+
+    private AssociationValue(){}
 
     /**
      * 使用指定的key和value创建关联值
@@ -28,8 +30,8 @@ public class AssociationValue implements Serializable {
     public AssociationValue(String key, String value) {
         Assert.notNull(key, "Cannot associate a Saga with a null key");
         Assert.notNull(value, "Cannot associate a Saga with a null value");
-        this.propertyKey = key;
-        this.propertyValue = value;
+        this.key = key;
+        this.value = value;
     }
 
     /**
@@ -38,7 +40,7 @@ public class AssociationValue implements Serializable {
      * @return the key of this association value
      */
     public String getKey() {
-        return propertyKey;
+        return key;
     }
 
     /**
@@ -47,7 +49,7 @@ public class AssociationValue implements Serializable {
      * @return the value of this association. Never <code>null</code>.
      */
     public String getValue() {
-        return propertyValue;
+        return value;
     }
 
     @SuppressWarnings({"RedundantIfStatement"})
@@ -62,10 +64,10 @@ public class AssociationValue implements Serializable {
 
         AssociationValue that = (AssociationValue) o;
 
-        if (!propertyKey.equals(that.propertyKey)) {
+        if (!key.equals(that.key)) {
             return false;
         }
-        if (!propertyValue.equals(that.propertyValue)) {
+        if (!value.equals(that.value)) {
             return false;
         }
 
@@ -74,8 +76,10 @@ public class AssociationValue implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = propertyKey.hashCode();
-        result = 31 * result + propertyValue.hashCode();
+        int result = key.hashCode();
+        result = 31 * result + value.hashCode();
         return result;
     }
+
+
 }
