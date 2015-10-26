@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import static java.lang.String.format;
+import static org.sluckframework.common.util.ReflectionUtils.ensureAccessible;
 
 /**
  * 通用的saga工厂
@@ -20,7 +21,9 @@ public class GenericSagaFactory implements SagaFactory{
     @Override
     public <T extends Saga> T createSaga(Class<T> sagaType) {
         try {
-            T instance = sagaType.getConstructor().newInstance();
+            Constructor<T> constructor = sagaType.getDeclaredConstructor();
+            ensureAccessible(constructor);
+            T instance = constructor.newInstance();
             resourceInjector.injectResources(instance);
             return instance;
         } catch (InstantiationException e) {
