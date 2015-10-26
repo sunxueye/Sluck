@@ -21,7 +21,7 @@ public class AssociationValuesImpl implements AssociationValues, Serializable {
 
     private static final long serialVersionUID = 6756483053106696964L;
 
-    private final CopyOnWriteArraySet<AssociationValue> values = new CopyOnWriteArraySet<>();
+    private Set<AssociationValue> values = new CopyOnWriteArraySet<>();
     private transient Set<AssociationValue> addedValues = new HashSet<>();
     private transient Set<AssociationValue> removedValues = new HashSet<>();
 
@@ -102,5 +102,12 @@ public class AssociationValuesImpl implements AssociationValues, Serializable {
         if (removedValues != null) {
             removedValues.clear();
         }
+    }
+
+    public Set<AssociationValue> getValues() {
+        return values;
+    }
+    public void setValues(Set<AssociationValue> values) {
+        this.values = values;
     }
 }
