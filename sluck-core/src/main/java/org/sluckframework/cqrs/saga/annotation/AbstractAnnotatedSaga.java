@@ -1,5 +1,6 @@
 package org.sluckframework.cqrs.saga.annotation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.sluckframework.common.annotation.ClasspathParameterResolverFactory;
 import org.sluckframework.common.annotation.ParameterResolverFactory;
 import org.sluckframework.cqrs.saga.AssociationValue;
@@ -21,7 +22,9 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
 
     private static final long serialVersionUID = 3385024168304711298L;
 
-    private AssociationValuesImpl associationValues = new AssociationValuesImpl();
+    @JsonIgnore
+    private AssociationValues associationValues = new AssociationValuesImpl();
+
     private final String sagaIdentifier;
     private transient volatile SagaMethodMessageHandlerInspector<? extends AbstractAnnotatedSaga> inspector;
     private volatile boolean active = true;
@@ -102,6 +105,7 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
      *
      * @param property The value to associate this saga with.
      */
+    @Override
     public void associateWith(AssociationValue property) {
         associationValues.add(property);
     }
