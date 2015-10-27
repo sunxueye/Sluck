@@ -104,10 +104,10 @@ public class AssociationValuesImpl implements AssociationValues, Serializable {
         }
     }
 
-    public Set<AssociationValue> getValues() {
-        return values;
-    }
-    public void setValues(Set<AssociationValue> values) {
-        this.values = values;
-    }
+//    public Set<AssociationValue> getValues() {
+//        return values;
+//    }
+//    public void setValues(Set<AssociationValue> values) {
+//        this.values = values;
+//    }
 }
