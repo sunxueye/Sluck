@@ -66,10 +66,10 @@ public class AssociationValuesImpl implements AssociationValues, Serializable {
 
     private void initializeChangeTrackers() {
         if (removedValues == null) {
-            removedValues = new HashSet<AssociationValue>();
+            removedValues = new HashSet<>();
         }
         if (addedValues == null) {
-            addedValues = new HashSet<AssociationValue>();
+            addedValues = new HashSet<>();
         }
     }
 
@@ -104,10 +104,4 @@ public class AssociationValuesImpl implements AssociationValues, Serializable {
         }
     }
 
-//    public Set<AssociationValue> getValues() {
-//        return values;
-//    }
-//    public void setValues(Set<AssociationValue> values) {
-//        this.values = values;
-//    }
 }
