@@ -110,6 +110,11 @@ public abstract class AbstractAnnotatedSaga implements Saga, Serializable {
         associationValues.add(property);
     }
 
+    @Override
+    public void reSetAssociationValues() {
+        associationValues = new AssociationValuesImpl();
+    }
+
     /**
      * 注册关联值
      *
