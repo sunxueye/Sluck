@@ -12,7 +12,7 @@ import java.util.LinkedList;
  */
 public abstract class CurrentUnitOfWork {
 
-    private static final ThreadLocal<Deque<UnitOfWork>> CURRENT = new ThreadLocal<Deque<UnitOfWork>>();
+    private static final ThreadLocal<Deque<UnitOfWork>> CURRENT = new ThreadLocal<>();
 
     private CurrentUnitOfWork() {
     }
@@ -59,7 +59,7 @@ public abstract class CurrentUnitOfWork {
      */
     public static void set(UnitOfWork unitOfWork) {
         if (CURRENT.get() == null) {
-            CURRENT.set(new LinkedList<UnitOfWork>());
+            CURRENT.set(new LinkedList<>());
         }
         CURRENT.get().push(unitOfWork);
     }
