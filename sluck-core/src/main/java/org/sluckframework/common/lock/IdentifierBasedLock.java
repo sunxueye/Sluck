@@ -1,8 +1,5 @@
 package org.sluckframework.common.lock;
 
-import static java.util.Collections.newSetFromMap;
-import static java.util.Collections.synchronizedMap;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +7,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static java.util.Collections.newSetFromMap;
+import static java.util.Collections.synchronizedMap;
 
 /**
  * 标示符锁机制，每个标示符都对应一个锁，一个线程可以获取锁多次，但是也必须释放相应的次数别的线程才能获取这个聚合的锁
@@ -21,9 +21,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class IdentifierBasedLock {
 
     private static final Set<IdentifierBasedLock> INSTANCES =
-            newSetFromMap(synchronizedMap(new WeakHashMap<IdentifierBasedLock, Boolean>()));
+            newSetFromMap(synchronizedMap(new WeakHashMap<>()));
 
-    private final ConcurrentHashMap<String, DisposableLock> locks = new ConcurrentHashMap<String, DisposableLock>();
+    private final ConcurrentHashMap<String, DisposableLock> locks = new ConcurrentHashMap<>();
 
     /**
      * 创建一个新的标示符锁实例
@@ -37,7 +37,7 @@ public class IdentifierBasedLock {
     }
 
     private static Set<Thread> threadsWaitingForMyLocks(Thread owner, Set<IdentifierBasedLock> locksInUse) {
-        Set<Thread> waitingThreads = new HashSet<Thread>();
+        Set<Thread> waitingThreads = new HashSet<>();
         for (IdentifierBasedLock lock : locksInUse) {
             for (DisposableLock disposableLock : lock.locks.values()) {
                 if (disposableLock.isHeldBy(owner)) {
