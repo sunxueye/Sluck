@@ -154,8 +154,19 @@ public class GenericSagaSqlSchema implements SagaSqlSchema {
 
     @Override
     public SerializedObject<byte[]> readSerializedSaga(ResultSet resultSet) throws SQLException {
-        return new SimpleSerializedObject<byte[]>(resultSet.getBytes(1), byte[].class,
+        return new SimpleSerializedObject<>(resultSet.getBytes(1), byte[].class,
                 resultSet.getString(2),
                 resultSet.getString(3));
+    }
+
+    @Override
+    public PreparedStatement sql_findAssociationValues(Connection connection, String sagaIdntifier, String sagaType) throws SQLException {
+        final String sql = "SELECT associationKey,  associationValue FROM " + schemaConfiguration.assocValueEntryTable()
+                + " WHERE sagaId = ?"
+                + " AND sagaType = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, sagaIdntifier);
+        preparedStatement.setString(2, sagaType);
+        return preparedStatement;
     }
 }
