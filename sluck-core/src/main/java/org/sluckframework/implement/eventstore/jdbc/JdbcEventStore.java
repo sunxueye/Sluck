@@ -1,13 +1,5 @@
 package org.sluckframework.implement.eventstore.jdbc;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.common.exception.Assert;
@@ -38,8 +30,15 @@ import org.sluckframework.domain.repository.ConcurrencyException;
 import org.sluckframework.implement.eventstore.jdbc.criteria.JdbcCriteria;
 import org.sluckframework.implement.eventstore.jdbc.criteria.ParameterRegistry;
 
-import static org.sluckframework.domain.identifier.IdentifierValidator.validateIdentifier;
+import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import static org.sluckframework.cqrs.upcasting.UpcastUtils.upcastAndDeserialize;
+import static org.sluckframework.domain.identifier.IdentifierValidator.validateIdentifier;
 
 
 /**
