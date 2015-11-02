@@ -1,28 +1,5 @@
 package org.sluckframework.common.serializer.json;
 
-import java.io.IOException;
-
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.MonthDay;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadableInstant;
-import org.joda.time.YearMonth;
-import org.sluckframework.common.serializer.AnnotationRevisionResolver;
-import org.sluckframework.common.serializer.ChainingConverterFactory;
-import org.sluckframework.common.serializer.ConverterFactory;
-import org.sluckframework.common.serializer.RevisionResolver;
-import org.sluckframework.common.serializer.SerializationException;
-import org.sluckframework.common.serializer.SerializedObject;
-import org.sluckframework.common.serializer.SerializedType;
-import org.sluckframework.common.serializer.Serializer;
-import org.sluckframework.common.serializer.SimpleSerializedObject;
-import org.sluckframework.common.serializer.SimpleSerializedType;
-import org.sluckframework.common.serializer.UnknownSerializedTypeException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +7,10 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.joda.time.*;
+import org.sluckframework.common.serializer.*;
+
+import java.io.IOException;
 
 /**
  * 使用 jackson 序列化 对象 为 json形式
@@ -63,7 +44,7 @@ public class JacksonSerializer implements Serializer {
 
 	/**
 	 * 使用指定的 RevisionResolver ConverterFactory 初始化
-	 * @param revisionResolve The strategy to use to resolve the revision of an object
+	 * @param revisionResolver The strategy to use to resolve the revision of an object
 	 * @param converterFactory The factory providing the converter instances for upcasters
 	 */
 	public JacksonSerializer(RevisionResolver revisionResolver, ConverterFactory converterFactory) {
@@ -108,16 +89,16 @@ public class JacksonSerializer implements Serializer {
 		this.classLoader = classLoader == null ? getClass().getClassLoader(): classLoader;
 		this.objectMapper.registerModule(new SimpleModule("Sluck-Jackson Module")
 						 .addSerializer(ReadableInstant.class, new ToStringSerializer())
-						 .addDeserializer(DateTime.class, new JodaDeserializer<DateTime>(DateTime.class))
-						 .addDeserializer(Instant.class, new JodaDeserializer<Instant>(Instant.class))
-						 .addDeserializer(MutableDateTime.class, new JodaDeserializer<MutableDateTime>(
-										  MutableDateTime.class))
-						 .addDeserializer(YearMonth.class, new JodaDeserializer<YearMonth>(YearMonth.class))
-						 .addDeserializer(MonthDay.class, new JodaDeserializer<MonthDay>(MonthDay.class))
-						 .addDeserializer(LocalDate.class, new JodaDeserializer<LocalDate>(LocalDate.class))
-						 .addDeserializer(LocalTime.class, new JodaDeserializer<LocalTime>(LocalTime.class))
-						 .addDeserializer(LocalDateTime.class, new JodaDeserializer<LocalDateTime>(
-										  LocalDateTime.class)));
+						 .addDeserializer(DateTime.class, new JodaDeserializer<>(DateTime.class))
+						 .addDeserializer(Instant.class, new JodaDeserializer<>(Instant.class))
+						 .addDeserializer(MutableDateTime.class, new JodaDeserializer<>(
+								 MutableDateTime.class))
+						 .addDeserializer(YearMonth.class, new JodaDeserializer<>(YearMonth.class))
+						 .addDeserializer(MonthDay.class, new JodaDeserializer<>(MonthDay.class))
+						 .addDeserializer(LocalDate.class, new JodaDeserializer<>(LocalDate.class))
+						 .addDeserializer(LocalTime.class, new JodaDeserializer<>(LocalTime.class))
+						 .addDeserializer(LocalDateTime.class, new JodaDeserializer<>(
+								 LocalDateTime.class)));
 		if (converterFactory instanceof ChainingConverterFactory) {
 			registerConverters((ChainingConverterFactory) converterFactory);
 		}
@@ -138,7 +119,7 @@ public class JacksonSerializer implements Serializer {
 		try {
 			if (String.class.equals(expectedRepresentation)) {
 				// noinspection unchecked
-				return new SimpleSerializedObject<T>((T) getWriter()
+				return new SimpleSerializedObject<>((T) getWriter()
 						.writeValueAsString(object), expectedRepresentation,
 						typeForClass(object.getClass()));
 			}
@@ -146,7 +127,7 @@ public class JacksonSerializer implements Serializer {
 			byte[] serializedBytes = getWriter().writeValueAsBytes(object);
 			T serializedContent = converterFactory.getConverter(byte[].class,
 					expectedRepresentation).convert(serializedBytes);
-			return new SimpleSerializedObject<T>(serializedContent,
+			return new SimpleSerializedObject<>(serializedContent,
 					expectedRepresentation, typeForClass(object.getClass()));
 		} catch (JsonProcessingException e) {
 			throw new SerializationException("Unable to serialize object", e);
