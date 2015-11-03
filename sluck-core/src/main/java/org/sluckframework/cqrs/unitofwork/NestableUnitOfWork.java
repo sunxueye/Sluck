@@ -1,14 +1,14 @@
 package org.sluckframework.cqrs.unitofwork;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sluckframework.cqrs.eventhanding.EventBus;
 import org.sluckframework.domain.event.EventProxy;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 可以嵌套的 uow
@@ -23,10 +23,10 @@ public abstract class NestableUnitOfWork implements UnitOfWork {
 
     private boolean isStarted;
     private UnitOfWork outerUnitOfWork;
-    private final List<NestableUnitOfWork> innerUnitsOfWork = new ArrayList<NestableUnitOfWork>();
+    private final List<NestableUnitOfWork> innerUnitsOfWork = new ArrayList<>();
     private boolean isCommitted = false;
-    private final Map<String, Object> resources = new HashMap<String, Object>();
-    private final Map<String, Object> inheritedResources = new HashMap<String, Object>();
+    private final Map<String, Object> resources = new HashMap<>();
+    private final Map<String, Object> inheritedResources = new HashMap<>();
 
     @Override
     public void commit() {
