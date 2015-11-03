@@ -92,6 +92,9 @@ public class JdbcSagaRepository extends AbstractSagaRepository {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         Connection conn = null;
+
+        PreparedStatement valueStatement = null;
+        ResultSet valuleResultSet = null;
         try {
             conn = connectionProvider.getConnection();
             statement = sqldef.sql_loadSaga(conn, sagaId);
@@ -108,6 +111,13 @@ public class JdbcSagaRepository extends AbstractSagaRepository {
             if (injector != null) {
                 injector.injectResources(loadedSaga);
             }
+            loadedSaga.reSetAssociationValues();
+            valueStatement = sqldef.sql_findAssociationValues(conn, sagaId, typeOf(loadedSaga.getClass()));
+            valuleResultSet = valueStatement.executeQuery();
+            while (valuleResultSet.next()) {
+                loadedSaga.associateWith(new AssociationValue(valuleResultSet.getString(1),
+                        valuleResultSet.getString(2)));
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("Loaded saga id [{}] of type [{}]", sagaId, loadedSaga.getClass().getName());
             }
@@ -118,6 +128,8 @@ public class JdbcSagaRepository extends AbstractSagaRepository {
             closeQuietly(statement);
             closeQuietly(resultSet);
             closeQuietly(conn);
+            closeQuietly(valueStatement);
+            closeQuietly(valuleResultSet);
         }
     }
 
@@ -184,7 +196,7 @@ public class JdbcSagaRepository extends AbstractSagaRepository {
             statement = sqldef.sql_findAssocSagaIdentifiers(conn, associationValue.getKey(),
                     associationValue.getValue(), typeOf(type));
             resultSet = statement.executeQuery();
-            Set<String> result = new TreeSet<String>();
+            Set<String> result = new TreeSet<>();
             while (resultSet.next()) {
                 result.add(resultSet.getString(1));
             }
