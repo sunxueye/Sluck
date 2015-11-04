@@ -26,6 +26,13 @@ public interface Saga {
     AssociationValues getAssociationValues();
 
     /**
+     * 增加关联值
+     *
+     * @param property target associationValue
+     */
+    void associateWith(AssociationValue property);
+
+    /**
      * 处理事件
      *
      * @param event the event to handle
@@ -38,4 +45,10 @@ public interface Saga {
      * @return <code>true</code> if this saga is active, <code>false</code> otherwise.
      */
     boolean isActive();
+
+    /**
+     * 重置 所有关联值
+     */
+    void reSetAssociationValues();
+
 }
