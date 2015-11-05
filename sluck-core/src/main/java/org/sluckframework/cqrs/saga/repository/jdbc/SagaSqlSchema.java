@@ -129,4 +129,15 @@ public interface SagaSqlSchema {
      * @return a SerializedObject, containing the serialized data from the resultSet
      */
     SerializedObject<?> readSerializedSaga(ResultSet resultSet) throws SQLException;
+
+    /**
+     * 找到 指定聚合标示符关联的 关联值
+     *
+     * @param connection connection to create PreparedSatatement for
+     * @param sagaIdntifier target saga identifier
+     * @param sagaType saga type
+     * @return contaion target saga association value
+     */
+    PreparedStatement sql_findAssociationValues(Connection connection, String sagaIdntifier,
+                                                String sagaType) throws SQLException;
 }
