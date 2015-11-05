@@ -1,11 +1,11 @@
 package org.sluckframework.common.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.sluckframework.cqrs.unitofwork.CurrentUnitOfWork;
 import org.sluckframework.cqrs.unitofwork.UnitOfWork;
 import org.sluckframework.cqrs.unitofwork.UnitOfWorkListenerAdapter;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 
 /**
@@ -62,7 +62,7 @@ public class UnitOfWorkAwareConnectionProviderWrapper implements ConnectionProvi
         return connection;
     }
 
-    private static interface UoWAttachedConnection {
+    private interface UoWAttachedConnection {
 
         void forceClose();
     }
