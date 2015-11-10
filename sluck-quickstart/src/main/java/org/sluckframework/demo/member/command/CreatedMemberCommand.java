@@ -1,6 +1,7 @@
 package org.sluckframework.demo.member.command;
 
 import org.sluckframework.demo.member.MemberID;
+import org.sluckframework.demo.member.MerchantID;
 
 /**
  * Author: sunxy
@@ -8,6 +9,8 @@ import org.sluckframework.demo.member.MemberID;
  * Since: 1.0
  */
 public class CreatedMemberCommand {
+
+    private MerchantID merchantID;
 
     private MemberID memberID;
     private String name;
@@ -29,5 +32,13 @@ public class CreatedMemberCommand {
 
     public String getIdCard() {
         return idCard;
+    }
+
+    public void setMerchantID(MerchantID merchantID) {
+        this.merchantID = merchantID;
+    }
+
+    public MerchantID getMerchantID() {
+        return merchantID;
     }
 }
