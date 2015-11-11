@@ -28,8 +28,11 @@ public class Member extends AbstractAnnotatedAggregateRoot<MemberID> {
 
     @CommandHandler
     public Member(CreatedMemberCommand createdMemberCommand) {
-        apply(new MemberCreatedEvent(createdMemberCommand.getMemberID(), createdMemberCommand.getName(),
-                createdMemberCommand.getIdCard()));
+        System.out.println("5");
+        MemberCreatedEvent m = new MemberCreatedEvent(createdMemberCommand.getMemberID(), createdMemberCommand.getName(),
+                createdMemberCommand.getIdCard());
+        m.setMerchantID(createdMemberCommand.getMerchantID());
+        apply(m);
     }
 
     @CommandHandler
