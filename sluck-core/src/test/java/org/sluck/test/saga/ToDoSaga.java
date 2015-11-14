@@ -23,6 +23,10 @@ public class ToDoSaga extends AbstractAnnotatedSaga {
 
     private ScheduleToken deadline;
 
+    public ToDoSaga() {
+        super(null);
+    }
+
     @StartSaga
     @SagaEventHandler(associationProperty = "todoId")
     public void onToDoItemCreated(ToDoItemCreatedEvent event) {
