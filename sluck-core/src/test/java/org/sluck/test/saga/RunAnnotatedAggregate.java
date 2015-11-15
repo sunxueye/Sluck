@@ -60,6 +60,7 @@ public class RunAnnotatedAggregate {
             }
         };
 
+
         AggregateEventStore eventStore = new JdbcEventStore(getDataSource());
 
         // a Simple Event Bus will do
@@ -83,12 +84,13 @@ public class RunAnnotatedAggregate {
     public static DataSource getDataSource() {
         HikariConfig config = new HikariConfig();
         config.setMaximumPoolSize(10);
-        config.setDataSourceClassName("oracle.jdbc.pool.OracleDataSource");
-//        config.setJdbcUrl("jdbc:oracle:thin:@169.254.177.142:1521:XE");
-        config.addDataSourceProperty("serverName", "169.254.177.142");
-        config.addDataSourceProperty("portNumber", "1521");
-        config.addDataSourceProperty("databaseName", "XE");
-        config.addDataSourceProperty("driverType", "thin");
+        config.setDriverClassName("oracle.jdbc.pool.OracleDataSource");
+//        config.setDataSourceClassName("oracle.jdbc.pool.OracleDataSource");
+        config.setJdbcUrl("jdbc:oracle:thin:@169.254.177.142:1521:XE");
+//        config.addDataSourceProperty("serverName", "169.254.177.142");
+//        config.addDataSourceProperty("portNumber", "1521");
+//        config.addDataSourceProperty("databaseName", "XE");
+//        config.addDataSourceProperty("driverType", "thin");
         config.setUsername("sun");
         config.setPassword("sun");
         config.setConnectionTestQuery("select sysdate from dual");
