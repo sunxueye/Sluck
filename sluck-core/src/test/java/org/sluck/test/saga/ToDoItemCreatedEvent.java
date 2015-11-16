@@ -4,8 +4,10 @@ import org.sluckframework.domain.identifier.DefaultIdentifier;
 
 public class ToDoItemCreatedEvent {
 
-    private final DefaultIdentifier todoId;
-    private final String description;
+    private DefaultIdentifier todoId;
+    private String description;
+
+    private ToDoItemCreatedEvent(){}
 
     public ToDoItemCreatedEvent(DefaultIdentifier todoId, String description) {
         this.todoId = todoId;
