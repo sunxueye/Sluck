@@ -1,6 +1,7 @@
 package org.sluckframework.demo.member.event;
 
 import org.sluckframework.demo.member.MemberID;
+import org.sluckframework.demo.member.MerchantID;
 
 /**
  * 用户被创建事件
@@ -10,6 +11,8 @@ import org.sluckframework.demo.member.MemberID;
  * Since: 1.0
  */
 public class MemberCreatedEvent {
+
+    private MerchantID merchantID;
 
     private MemberID memberID;
 
@@ -35,5 +38,13 @@ public class MemberCreatedEvent {
 
     public String getIdCard() {
         return idCard;
+    }
+
+    public void setMerchantID(MerchantID merchantID) {
+        this.merchantID = merchantID;
+    }
+
+    public MerchantID getMerchantID() {
+        return merchantID;
     }
 }
