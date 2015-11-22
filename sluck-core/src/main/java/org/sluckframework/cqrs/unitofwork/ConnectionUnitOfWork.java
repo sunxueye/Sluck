@@ -1,9 +1,9 @@
 package org.sluckframework.cqrs.unitofwork;
 
-import java.sql.Connection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
 
 /**
  * 带有 jdbc连接 的 uow
@@ -13,8 +13,15 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public class ConnectionUnitOfWork extends DefaultUnitOfWork {
-	 private static final Logger logger = LoggerFactory.getLogger(ConnectionUnitOfWork.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConnectionUnitOfWork.class);
 	 
-	 private Connection connection;
+	private Connection connection;
+
+	public boolean ifCanCommit() {
+		return false;
+	}
+
+
+
 
 }
