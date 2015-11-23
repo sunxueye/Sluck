@@ -21,7 +21,7 @@ public class ConnectionUnitOfWork extends DefaultUnitOfWork {
 		return false;
 	}
 
-
+    public void commmitTransaction(){}
 
 
 }
