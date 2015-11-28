@@ -25,4 +25,10 @@ public interface ReplayAware {
      * @param cause The exception that stopped the replay;
      */
     void onReplayFailed(Throwable cause);
+
+    /**
+     * 是否已经重建
+     * @return if replay
+     */
+    boolean alreadyReplay();
 }
