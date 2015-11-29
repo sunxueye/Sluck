@@ -88,6 +88,11 @@ public class AnnotationEventListenerAdapter implements EventListenerProxy, Repla
         replayAware.onReplayFailed(cause);
     }
 
+    @Override
+    public boolean alreadyReplay() {
+        return false;
+    }
+
     private static final class NoOpReplayAware implements ReplayAware {
 
         @Override
@@ -100,6 +105,11 @@ public class AnnotationEventListenerAdapter implements EventListenerProxy, Repla
 
         @Override
         public void onReplayFailed(Throwable cause) {
+        }
+
+        @Override
+        public boolean alreadyReplay() {
+            return false;
         }
     }
 }
