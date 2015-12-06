@@ -44,6 +44,7 @@ public class AnnotationEventListenerAdapter implements EventListenerProxy, Repla
         this(annotatedEventListener, ClasspathParameterResolverFactory.forClass(annotatedEventListener.getClass()));
     }
 
+
     /**
      * 让 eventbus 订阅 监听器
      *
