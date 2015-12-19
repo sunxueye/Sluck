@@ -73,9 +73,9 @@ public class GuavaCacheDeom {
     public static void jvmGcCache() {
         CacheBuilder.newBuilder()
                 .maximumSize(10)
-                .weakKeys() //弱引用key可以被jvm回收
-                .weakValues() //弱引用value可以被jvm回收
-                .softValues() //使用软引用回收
+                .weakKeys() //设置KEY为弱引用
+                .weakValues() //设置值为弱引用
+                .softValues() //设置值为软引用
                 .build();
     }
 
