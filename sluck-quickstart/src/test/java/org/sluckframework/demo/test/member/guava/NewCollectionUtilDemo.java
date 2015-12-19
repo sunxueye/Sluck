@@ -80,12 +80,6 @@ public class NewCollectionUtilDemo {
         Maps.difference(map1,map2).entriesDiffering(); //key相同但是value不同的项 返回的map value为ValueDifferent类型
         Maps.difference(map1,map2).entriesOnlyOnLeft();//只存在左边的项
         Maps.difference(map1,map2).entriesOnlyOnRight();//只存在右边的项
-
-
-    }
-
-    public static void test() {
-
     }
 
     public static void main(String[] args) {
