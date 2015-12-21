@@ -1,0 +1,77 @@
+package org.sluckframework.demo.test.member.guava;
+
+import com.google.common.util.concurrent.*;
+
+import java.util.concurrent.Executors;
+
+/**
+ * Author: sunxy
+ * Created: 2015-12-21 16:49
+ * Since: 1.0
+ */
+public class ListenableFutureDemo {
+
+    //增加监听器,每个任务执行后会执行监听器
+    //增加监听器的时候内部实现有两种方案:(1)如果此时future还未执行完,则构造一个监听器链,等待执行完后执行
+    //(2)如果已经执行完了,则直接使用对应的线程池开始执行执行监听器
+    public static void addListener() {
+        ListenableFutureTask future = ListenableFutureTask.create(() -> {
+            System.out.println("running");
+            return "null";
+        });
+        future.addListener(() -> {
+            System.out.println("run over");
+        }, Executors.newSingleThreadExecutor());
+
+        Executors.newCachedThreadPool().execute(future);
+    }
+
+    //内部实现其实就是构造一个监听器,获取结果并执行对应方法,注册这个监听器给future
+    public static void callback() {
+        ListenableFutureTask future = ListenableFutureTask.create(() -> {
+            System.out.println("running");
+            return "null";
+        });
+        FutureCallback callback = new FutureCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                System.out.println("success");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                System.out.println("failed");
+            }
+        };
+        Futures.addCallback(future, callback);
+
+        Executors.newCachedThreadPool().execute(future);
+    }
+
+    //创建future的方式,使用execurtorService直接创建,ListenFuture也有对应的Service创建方法
+    public static void createFuture() throws InterruptedException {
+        ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+        ListenableFuture future = service.submit(() -> {
+            System.out.println("running");
+            return null;
+        });
+        Thread.currentThread().sleep(1000);
+        Futures.addCallback(future, new FutureCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                System.out.println("success");
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                System.out.println("failed");
+            }
+        });
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+//        addListener();
+//        callback();
+        createFuture();
+    }
+}
