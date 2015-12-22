@@ -1,7 +1,10 @@
 package org.sluckframework.demo.test.member.guava;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.*;
 
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 /**
@@ -67,6 +70,37 @@ public class ListenableFutureDemo {
                 System.out.println("failed");
             }
         });
+    }
+
+    //listenableFuture工具类Futures 创建future
+    public static void futures() {
+        ListeningExecutorService service = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+        ListenableFuture future = service.submit(() -> {
+            System.out.println("running a");
+            return "a";
+        });
+        //transformAsync(future<A>, AsyncFunction<A, B> 通过一个future和函数对象来创建一个future,结果为B
+        ListenableFuture future1 = Futures.transformAsync(future, new AsyncFunction() {
+            @Override
+            public ListenableFuture apply(Object input) throws Exception {
+                return service.submit((Callable<Object>) () -> {
+                    System.out.println("running b");
+                    return "b";
+                });
+            }
+        });
+
+        List<ListenableFuture> lists = Lists.newArrayList();
+        lists.add(future);
+        lists.add(future1);
+        //所有iterable中的future的result组成的list 便为这个 future的返回值,如果有一个为failed或者cancel,则这个
+        //future也为failed或者cancel
+//        ListenableFuture future2 = Futures.allAsList(lists);
+        //所有成功的future的值组成的list便为其返回值,如果有failed的则对应的位置为null
+//        ListenableFuture future3 = Futures.successfulAsList(future, future1, future2);
+
+        //返回可以抛出指定异常的checkedFuture
+//        Futures.makeChecked(future3, input -> new RuntimeException("error"));
     }
 
     public static void main(String[] args) throws InterruptedException {
