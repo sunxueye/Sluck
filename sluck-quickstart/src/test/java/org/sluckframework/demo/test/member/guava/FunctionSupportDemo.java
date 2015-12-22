@@ -43,6 +43,12 @@ public class FunctionSupportDemo {
 
     }
 
+    public static void predicateUse() {
+        Maps.filterKeys(Maps.newHashMap(), input -> false);
+
+        Maps.transformEntries(Maps.newHashMap(), (key, value) -> key);
+    }
+
     public static void main(String[] args) {
 
     }
