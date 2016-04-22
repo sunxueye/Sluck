@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="1800">
+
+	<properties>
+		<property name="LOG_HOME">/web/logs/finance</property>
+		<property name="FILE_NAME">output</property>
+	</properties>
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+
+		<RollingRandomAccessFile name="running-log"
+			fileName="${LOG_HOME}/${FILE_NAME}.log"
+			filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile name="running-job"
+			fileName="${LOG_HOME}/job/job_output.log"
+			filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}_job-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile name="running-job-error"
+			fileName="${LOG_HOME}/joberror/job_error.log"
+			filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}_job-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile name="running-message"
+			fileName="${LOG_HOME}/message/sendmessage.log"
+			filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}_job-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile name="running-message-error"
+			fileName="${LOG_HOME}/msgerror/msgerror.log"
+			filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}_job-%d{yyyy-MM-dd}-%i.log.gz">
+			<PatternLayout
+				pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		
+	</Appenders>
+	<Loggers>
+		<Logger name="com.ecpss.finance.domain" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.service" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.infrastructure" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.Interaction" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.job" level="info"
+			additivity="true">
+			<AppenderRef ref="running-job" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.job.exception.LoggerRejectedExecutionHandler" level="info"
+			additivity="true">
+			<AppenderRef ref="running-job-error" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.infrastructure.rptimpl.hibernate.interceptor" level="info"
+			additivity="true">
+			<AppenderRef ref="running-message-error" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.infrastructure.asynmessage" level="info"
+			additivity="true">
+			<AppenderRef ref="running-message" />
+		</Logger>
+		
+		<Logger name="com.ecpss.finance.interaction.asynmessage" level="info"
+			additivity="true">
+			<AppenderRef ref="running-message" />
+		</Logger>
+	
+		<Logger name="org.springframework" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+	    <Logger name="org.hibernate" level="info"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+
+		<Logger name="net.sf.ehcache" level="debug"
+				additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Logger name="java.sql" level="debug"
+			additivity="true">
+			<AppenderRef ref="running-log" />
+		</Logger>
+		
+		<Root level="error">
+		    <AppenderRef ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>

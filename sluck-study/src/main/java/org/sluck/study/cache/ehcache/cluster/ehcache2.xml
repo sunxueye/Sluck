@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd"
+         updateCheck="false" monitoring="autodetect"
+         dynamicConfig="false">
+
+    <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=manual,
+            rmiUrls=//127.0.0.1:40001/demoTest"/>
+    <cacheManagerPeerListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+            properties="hostName=127.0.0.1, port=40002,
+            socketTimeoutMillis=2000"/>
+     <cache name="demoTest" 
+           maxElementsInMemory="200000"
+           eternal="true"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU"
+           transactionalMode="local">
+         <cacheEventListenerFactory
+                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                 properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true,
+                 replicateUpdatesViaCopy=true, replicateRemovals=true "/>
+         <searchable keys="false" values="false">
+               <searchAttribute name="name"/>
+         </searchable>
+    </cache>
+    
+    <!--<cache name="MemberCache"
+           maxElementsInMemory="500000"
+           eternal="true"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU"
+           transactionalMode="local">
+      <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=false, replicatePuts=true, replicateUpdates=true,
+                 replicateUpdatesViaCopy=true, replicateRemovals=true "/>
+      <searchable keys="false" values="false">
+          <searchAttribute name="name"/>
+          <searchAttribute name="identityCard"/>
+      </searchable>
+    </cache>
+    
+    <cache name="AccountChangeRecordCache" 
+           maxElementsInMemory="1000000"
+           eternal="false"
+           timeToIdleSeconds="90000"
+           timeToLiveSeconds="90000"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU"
+           transactionalMode="local">
+      <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicateAsynchronously=false, replicatePuts=true, replicateUpdates=true,
+                 replicateUpdatesViaCopy=true, replicateRemovals=true "/>
+      <searchable keys="false" values="false">
+          <searchAttribute name="accountID" class="com.ecpss.finance.infrastructure.cache.AccountIDExtractor"/>
+          <searchAttribute name="createTime" class="com.ecpss.finance.infrastructure.cache.AccountChangeDateExtractor"/>
+          &lt;!&ndash; <searchAttribute name="businessItem" class="com.ecpss.finance.infrastructure.cache.AccountChangeAttributeExtractor"/> &ndash;&gt;
+      </searchable>
+    </cache>
+    
+    <cache name="AccountDailyCheckCache" 
+           maxElementsInMemory="1000000"
+           eternal="true"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU"
+           transactionalMode="local">
+      <searchable keys="false" values="false">
+          <searchAttribute name="accountId" class="com.ecpss.finance.infrastructure.cache.DaliyCheckAccountIDExtractor"/>
+          <searchAttribute name="checkDate"/>
+      </searchable>
+    </cache>-->
+</ehcache>
